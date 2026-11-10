@@ -23,7 +23,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h2>Medical Record</h2>
-                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o"/></t>
+                        <t t-call="esl_clinic_management.report_patient_block"><t t-set="patient" t-value="o"/></t>
                         <div class="row mb-3">
                             <div class="col-6">
                                 <strong>Address:</strong>
@@ -80,7 +80,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h2>Admission Form <span t-field="o.name"/></h2>
-                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
+                        <t t-call="esl_clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
                         <table class="table table-sm">
                             <tr><td><strong>Admission Date</strong></td><td><span t-field="o.admission_date"/></td>
                                 <td><strong>Admission Type</strong></td><td><span t-field="o.admission_type"/></td></tr>
@@ -110,7 +110,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h2>Discharge Summary <span t-field="o.name"/></h2>
-                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
+                        <t t-call="esl_clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
                         <table class="table table-sm">
                             <tr><td><strong>Admission</strong></td><td><span t-field="o.admission_id.name"/></td>
                                 <td><strong>Room / Bed</strong></td><td><span t-field="o.admission_id.bed_id"/></td></tr>
@@ -127,7 +127,7 @@
                         </div>
                         <div t-if="o.prescription_id">
                             <h5>Prescribed Medicines</h5>
-                            <t t-call="clinic_management.report_prescription_lines"><t t-set="prescription" t-value="o.prescription_id"/></t>
+                            <t t-call="esl_clinic_management.report_prescription_lines"><t t-set="prescription" t-value="o.prescription_id"/></t>
                         </div>
                         <div t-if="o.discharge_instructions">
                             <h5>Discharge Instructions</h5>
@@ -175,10 +175,10 @@
                             <h2>Prescription <span t-field="o.name"/></h2>
                             <div class="text-end"><strong>Date:</strong> <span t-field="o.date"/></div>
                         </div>
-                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
+                        <t t-call="esl_clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
                         <p t-if="o.consultation_id.diagnosis"><strong>Diagnosis:</strong> <span t-field="o.consultation_id.diagnosis"/></p>
                         <h3>&#8478;</h3>
-                        <t t-call="clinic_management.report_prescription_lines"><t t-set="prescription" t-value="o"/></t>
+                        <t t-call="esl_clinic_management.report_prescription_lines"><t t-set="prescription" t-value="o"/></t>
                         <p t-if="o.notes"><strong>Advice:</strong> <span t-field="o.notes"/></p>
                         <div class="row mt-5">
                             <div class="col-6"/>
@@ -198,7 +198,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h2>Laboratory Report <span t-field="o.name"/></h2>
-                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
+                        <t t-call="esl_clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
                         <table class="table table-sm table-borderless">
                             <tr><td><strong>Referred By:</strong> <span t-field="o.doctor_id"/></td>
                                 <td><strong>Requested:</strong> <span t-field="o.request_date"/></td>

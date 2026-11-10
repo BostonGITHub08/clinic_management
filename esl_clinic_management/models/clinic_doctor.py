@@ -77,7 +77,7 @@ class ClinicDoctor(models.Model):
         return res
 
     def _grant_doctor_access(self):
-        group = self.env.ref('clinic_management.group_clinic_doctor')
+        group = self.env.ref('esl_clinic_management.group_clinic_doctor')
         users = self.user_id.filtered(lambda u: group not in u.all_group_ids)
         if users:
             users.sudo().write({'group_ids': [(4, group.id)]})

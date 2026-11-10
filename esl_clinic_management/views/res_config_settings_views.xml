@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
-                <app data-string="Clinic" string="Clinic" name="clinic_management" groups="clinic_management.group_clinic_manager">
+                <app data-string="Clinic" string="Clinic" name="esl_clinic_management" groups="clinic_management.group_clinic_manager">
                     <block title="Appointments" name="clinic_appointment_settings">
                         <setting string="Default Duration" help="Default length of a new appointment">
                             <field name="clinic_appointment_duration" widget="float_time"/>
@@ -41,6 +41,6 @@
         <field name="name">Settings</field>
         <field name="res_model">res.config.settings</field>
         <field name="view_mode">form</field>
-        <field name="context">{'module': 'clinic_management', 'bin_size': False}</field>
+        <field name="context">{'module': 'esl_clinic_management', 'bin_size': False}</field>
     </record>
 </odoo>

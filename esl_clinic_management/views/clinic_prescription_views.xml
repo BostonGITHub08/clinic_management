@@ -26,7 +26,7 @@
                 <header>
                     <button name="action_confirm" type="object" string="Confirm" class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_dispense" type="object" string="Dispense Medicines" class="btn-primary"
-                            invisible="state != 'confirmed'" groups="clinic_management.group_clinic_pharmacist"
+                            invisible="state != 'confirmed'" groups="esl_clinic_management.group_clinic_pharmacist"
                             confirm="The medicines will be delivered from stock. Continue?"/>
                     <button name="action_create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice"
                             invisible="state not in ('confirmed', 'dispensed') or invoice_id or admission_id"/>

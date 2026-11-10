@@ -104,7 +104,7 @@ class ClinicLabRequest(models.Model):
         self.filtered(lambda r: r.state == 'cancelled').state = 'draft'
 
     def action_print_report(self):
-        return self.env.ref('clinic_management.action_report_lab').report_action(self)
+        return self.env.ref('esl_clinic_management.action_report_lab').report_action(self)
 
     def _get_invoice_lines(self):
         product = self.company_id._clinic_product('lab')

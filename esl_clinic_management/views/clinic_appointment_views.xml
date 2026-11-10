@@ -31,9 +31,9 @@
                     <button name="action_confirm" type="object" string="Confirm" class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_check_in" type="object" string="Check In" class="btn-primary" invisible="state != 'confirmed'"/>
                     <button name="action_start_consultation" type="object" string="Start Consultation" class="btn-primary"
-                            invisible="state != 'checked_in'" groups="clinic_management.group_clinic_doctor"/>
+                            invisible="state != 'checked_in'" groups="esl_clinic_management.group_clinic_doctor"/>
                     <button name="action_done" type="object" string="Complete" class="btn-primary"
-                            invisible="state != 'in_consultation'" groups="clinic_management.group_clinic_doctor"/>
+                            invisible="state != 'in_consultation'" groups="esl_clinic_management.group_clinic_doctor"/>
                     <button name="action_create_invoice" type="object" string="Create Invoice"
                             invisible="state not in ('checked_in', 'in_consultation', 'done') or invoice_id or not consultation_fee"
                             groups="account.group_account_invoice"/>

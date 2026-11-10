@@ -48,7 +48,7 @@ A simple, complete clinic ERP built on standard Odoo:
     ],
     'assets': {
         'web.assets_backend': [
-            'clinic_management/static/src/dashboard/*',
+            'esl_clinic_management/static/src/dashboard/*',
         ],
     },
     'images': [

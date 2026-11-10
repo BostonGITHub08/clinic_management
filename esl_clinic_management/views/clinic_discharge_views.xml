@@ -25,11 +25,11 @@
             <form string="Discharge">
                 <header>
                     <button name="action_approve" type="object" string="Doctor Approval" class="btn-primary"
-                            invisible="state != 'draft'" groups="clinic_management.group_clinic_doctor"/>
+                            invisible="state != 'draft'" groups="esl_clinic_management.group_clinic_doctor"/>
                     <button name="action_discharge" type="object" string="Discharge Patient" class="btn-primary"
                             invisible="state != 'approved'"/>
                     <button name="action_create_prescription" type="object" string="Prescribe Medicines"
-                            invisible="state == 'done' or prescription_id" groups="clinic_management.group_clinic_doctor"/>
+                            invisible="state == 'done' or prescription_id" groups="esl_clinic_management.group_clinic_doctor"/>
                     <button name="action_print_report" type="object" string="Print Discharge Report" invisible="state == 'cancelled'"/>
                     <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state not in ('approved', 'cancelled')"/>
                     <button name="action_cancel" type="object" string="Cancel" invisible="state in ('done', 'cancelled')"/>

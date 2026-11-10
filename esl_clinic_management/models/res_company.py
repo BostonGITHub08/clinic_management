@@ -17,5 +17,5 @@ class ResCompany(models.Model):
         self.ensure_one()
         product = self[f'clinic_{kind}_product_id']
         if not product:
-            product = self.env.ref(f'clinic_management.product_clinic_{kind}', raise_if_not_found=False)
+            product = self.env.ref(f'esl_clinic_management.product_clinic_{kind}', raise_if_not_found=False)
         return product

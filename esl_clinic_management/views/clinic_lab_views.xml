@@ -26,9 +26,9 @@
             <form string="Lab Request">
                 <header>
                     <button name="action_collect_sample" type="object" string="Collect Sample" class="btn-primary"
-                            invisible="state != 'draft'" groups="clinic_management.group_clinic_lab,clinic_management.group_clinic_nurse"/>
+                            invisible="state != 'draft'" groups="esl_clinic_management.group_clinic_lab,esl_clinic_management.group_clinic_nurse"/>
                     <button name="action_done" type="object" string="Validate Results" class="btn-primary"
-                            invisible="state != 'in_progress'" groups="clinic_management.group_clinic_lab"/>
+                            invisible="state != 'in_progress'" groups="esl_clinic_management.group_clinic_lab"/>
                     <button name="action_print_report" type="object" string="Print Lab Report" invisible="state != 'done'"/>
                     <button name="action_create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice"
                             invisible="state == 'cancelled' or invoice_id or admission_id"/>

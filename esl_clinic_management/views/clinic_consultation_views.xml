@@ -26,13 +26,13 @@
             <form string="Consultation">
                 <header>
                     <button name="action_start" type="object" string="Start Consultation" class="btn-primary"
-                            invisible="state != 'draft'" groups="clinic_management.group_clinic_doctor"/>
+                            invisible="state != 'draft'" groups="esl_clinic_management.group_clinic_doctor"/>
                     <button name="action_done" type="object" string="Complete" class="btn-primary"
-                            invisible="state != 'in_progress'" groups="clinic_management.group_clinic_doctor"/>
+                            invisible="state != 'in_progress'" groups="esl_clinic_management.group_clinic_doctor"/>
                     <button name="action_create_prescription" type="object" string="Prescribe Medicines"
-                            invisible="state not in ('in_progress', 'done')" groups="clinic_management.group_clinic_doctor"/>
+                            invisible="state not in ('in_progress', 'done')" groups="esl_clinic_management.group_clinic_doctor"/>
                     <button name="action_create_lab_request" type="object" string="Request Lab Test"
-                            invisible="state not in ('in_progress', 'done')" groups="clinic_management.group_clinic_doctor"/>
+                            invisible="state not in ('in_progress', 'done')" groups="esl_clinic_management.group_clinic_doctor"/>
                     <button name="action_cancel" type="object" string="Cancel" invisible="state not in ('draft', 'in_progress')"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
                 </header>

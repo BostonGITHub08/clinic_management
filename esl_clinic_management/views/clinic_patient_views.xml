@@ -53,7 +53,7 @@
             <form string="Patient">
                 <header>
                     <button name="action_book_appointment" type="object" string="Book Appointment" class="btn-primary"
-                            groups="clinic_management.group_clinic_receptionist,clinic_management.group_clinic_doctor"/>
+                            groups="esl_clinic_management.group_clinic_receptionist,esl_clinic_management.group_clinic_doctor"/>
                     <button name="%(action_report_patient)d" type="action" string="Print Medical Record"/>
                 </header>
                 <sheet>

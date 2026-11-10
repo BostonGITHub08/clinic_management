@@ -1,11 +1,11 @@
 from odoo import api, fields, models
 
 ROLE_GROUPS = {
-    'receptionist': 'clinic_management.group_clinic_receptionist',
-    'nurse': 'clinic_management.group_clinic_nurse',
-    'lab_technician': 'clinic_management.group_clinic_lab',
-    'pharmacist': 'clinic_management.group_clinic_pharmacist',
-    'admin': 'clinic_management.group_clinic_manager',
+    'receptionist': 'esl_clinic_management.group_clinic_receptionist',
+    'nurse': 'esl_clinic_management.group_clinic_nurse',
+    'lab_technician': 'esl_clinic_management.group_clinic_lab',
+    'pharmacist': 'esl_clinic_management.group_clinic_pharmacist',
+    'admin': 'esl_clinic_management.group_clinic_manager',
 }
 
 

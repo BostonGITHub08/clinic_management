@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_clinic_root" name="Clinic" sequence="20" web_icon="clinic_management,static/description/icon.png"
+    <menuitem id="menu_clinic_root" name="Clinic" sequence="20" web_icon="esl_clinic_management,static/description/icon.png"
               groups="group_clinic_user"/>
 
     <menuitem id="menu_clinic_dashboard" name="Dashboard" parent="menu_clinic_root" action="action_clinic_dashboard" sequence="1"/>

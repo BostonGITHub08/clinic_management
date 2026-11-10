@@ -125,7 +125,7 @@
                         </div>
                         <footer t-if="record.state.raw_value != 'maintenance'">
                             <button t-if="record.state.raw_value == 'available'" name="action_new_admission" type="object"
-                                    class="btn btn-sm btn-primary" groups="clinic_management.group_clinic_receptionist,clinic_management.group_clinic_nurse">Admit Patient</button>
+                                    class="btn btn-sm btn-primary" groups="esl_clinic_management.group_clinic_receptionist,esl_clinic_management.group_clinic_nurse">Admit Patient</button>
                             <button t-if="record.state.raw_value == 'occupied'" name="action_view_admission" type="object"
                                     class="btn btn-sm btn-secondary">View Admission</button>
                         </footer>
@@ -142,7 +142,7 @@
             <form string="Bed">
                 <header>
                     <button name="action_new_admission" type="object" string="Admit Patient" class="btn-primary" invisible="state != 'available'"
-                            groups="clinic_management.group_clinic_receptionist,clinic_management.group_clinic_nurse"/>
+                            groups="esl_clinic_management.group_clinic_receptionist,esl_clinic_management.group_clinic_nurse"/>
                     <button name="action_toggle_maintenance" type="object" string="Set Under Maintenance" invisible="state != 'available'"/>
                     <button name="action_toggle_maintenance" type="object" string="Maintenance Done" invisible="state != 'maintenance'"/>
                     <field name="state" widget="statusbar"/>

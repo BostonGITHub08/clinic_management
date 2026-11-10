@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="clinic_management.Dashboard">
+    <t t-name="esl_clinic_management.Dashboard">
         <div class="o_clinic_dashboard o_action h-100 overflow-auto" t-att-class="{'o_clinic_loading': state.loading}">
             <div class="o_clinic_wrap">
 
@@ -141,7 +141,7 @@
                             <div class="flex-grow-1"><h3>Upcoming Appointments</h3><small>Next in the schedule</small></div>
                             <a href="#" class="o_clinic_link" t-on-click.prevent="() => this.openAction('Appointments', 'clinic.appointment', [['state', 'in', ['draft', 'confirmed']]], ['calendar', 'list', 'form'])">View all</a>
                         </header>
-                        <t t-call="clinic_management.AppointmentRows"><t t-set="rows" t-value="state.data.upcoming_appointments"/></t>
+                        <t t-call="esl_clinic_management.AppointmentRows"><t t-set="rows" t-value="state.data.upcoming_appointments"/></t>
                     </div>
                     <div class="o_clinic_panel o_clinic_span_4 o_clinic_reveal" style="animation-delay: 480ms">
                         <header class="o_clinic_panel_head">
@@ -149,7 +149,7 @@
                             <div class="flex-grow-1"><h3>Recent Appointments</h3><small t-esc="periodLabel"/></div>
                             <a href="#" class="o_clinic_link" t-on-click.prevent="() => this.openKpi('appointments')">View all</a>
                         </header>
-                        <t t-call="clinic_management.AppointmentRows"><t t-set="rows" t-value="state.data.recent_appointments"/></t>
+                        <t t-call="esl_clinic_management.AppointmentRows"><t t-set="rows" t-value="state.data.recent_appointments"/></t>
                     </div>
                     <div class="o_clinic_panel o_clinic_span_4 o_clinic_reveal" style="animation-delay: 540ms">
                         <header class="o_clinic_panel_head">
@@ -178,7 +178,7 @@
         </div>
     </t>
 
-    <t t-name="clinic_management.AppointmentRows">
+    <t t-name="esl_clinic_management.AppointmentRows">
         <div t-if="!rows.length" class="o_clinic_empty">
             <i class="fa fa-calendar-o" title="Empty"/> No appointments.
         </div>

@@ -66,7 +66,7 @@ class ClinicDischarge(models.Model):
         return super().unlink()
 
     def action_approve(self):
-        if not self.env.user.has_group('clinic_management.group_clinic_doctor'):
+        if not self.env.user.has_group('esl_clinic_management.group_clinic_doctor'):
             raise UserError(self.env._("Only doctors can approve a discharge."))
         for discharge in self:
             if discharge.state != 'draft':
@@ -118,4 +118,4 @@ class ClinicDischarge(models.Model):
         }
 
     def action_print_report(self):
-        return self.env.ref('clinic_management.action_report_discharge').report_action(self)
+        return self.env.ref('esl_clinic_management.action_report_discharge').report_action(self)

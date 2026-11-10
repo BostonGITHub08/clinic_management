@@ -43,7 +43,7 @@ function verticalGradient(hex, from = 0.05, to = 0.45) {
 }
 
 export class ClinicDashboard extends Component {
-    static template = "clinic_management.Dashboard";
+    static template = "esl_clinic_management.Dashboard";
     static props = ["*"];
 
     setup() {
@@ -415,4 +415,4 @@ export class ClinicDashboard extends Component {
     }
 }
 
-registry.category("actions").add("clinic_management.dashboard", ClinicDashboard);
+registry.category("actions").add("esl_clinic_management.dashboard", ClinicDashboard);
