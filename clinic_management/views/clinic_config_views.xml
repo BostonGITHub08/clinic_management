@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- departments -->
+    <record id="view_clinic_department_list" model="ir.ui.view">
+        <field name="name">clinic.department.list</field>
+        <field name="model">clinic.department</field>
+        <field name="arch" type="xml">
+            <list string="Departments">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="head_doctor_id"/>
+                <field name="doctor_count"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_department_form" model="ir.ui.view">
+        <field name="name">clinic.department.form</field>
+        <field name="model">clinic.department</field>
+        <field name="arch" type="xml">
+            <form string="Department">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Cardiology"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="head_doctor_id"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="doctor_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="specialization_id"/>
+                            <field name="phone"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_clinic_department" model="ir.actions.act_window">
+        <field name="name">Departments</field>
+        <field name="res_model">clinic.department</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- specializations / conditions -->
+    <record id="view_clinic_specialization_list" model="ir.ui.view">
+        <field name="name">clinic.specialization.list</field>
+        <field name="model">clinic.specialization</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_clinic_specialization" model="ir.actions.act_window">
+        <field name="name">Specializations</field>
+        <field name="res_model">clinic.specialization</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_clinic_disease_list" model="ir.ui.view">
+        <field name="name">clinic.disease.list</field>
+        <field name="model">clinic.disease</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="color" widget="color_picker"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_clinic_disease" model="ir.actions.act_window">
+        <field name="name">Diseases &amp; Conditions</field>
+        <field name="res_model">clinic.disease</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

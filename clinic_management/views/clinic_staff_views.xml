@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_clinic_staff_list" model="ir.ui.view">
+        <field name="name">clinic.staff.list</field>
+        <field name="model">clinic.staff</field>
+        <field name="arch" type="xml">
+            <list string="Staff">
+                <field name="name"/>
+                <field name="role"/>
+                <field name="department_id"/>
+                <field name="shift"/>
+                <field name="phone"/>
+                <field name="user_id" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_staff_kanban" model="ir.ui.view">
+        <field name="name">clinic.staff.kanban</field>
+        <field name="model">clinic.staff</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="role">
+                <templates>
+                    <t t-name="card" class="flex-row">
+                        <aside class="o_kanban_aside_full">
+                            <field name="image_128" widget="image" options="{'img_class': 'object-fit-cover'}" alt="Staff"/>
+                        </aside>
+                        <main class="ms-2">
+                            <field name="name" class="fw-bold fs-5"/>
+                            <field name="role" class="text-primary"/>
+                            <field name="department_id" class="text-muted"/>
+                            <div t-if="record.phone.raw_value"><i title="Phone" class="fa fa-phone me-1"/><field name="phone"/></div>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_clinic_staff_form" model="ir.ui.view">
+        <field name="name">clinic.staff.form</field>
+        <field name="model">clinic.staff</field>
+        <field name="arch" type="xml">
+            <form string="Staff Member">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Name"/></h1>
+                        <field name="role"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="department_id"/>
+                            <field name="shift"/>
+                            <field name="joining_date"/>
+                        </group>
+                        <group>
+                            <field name="phone" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info mb-0" role="alert" invisible="not user_id">
+                        The related user automatically receives the access rights of the selected role.
+                    </div>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_staff_search" model="ir.ui.view">
+        <field name="name">clinic.staff.search</field>
+        <field name="model">clinic.staff</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="department_id"/>
+                <filter name="receptionist" string="Receptionists" domain="[('role', '=', 'receptionist')]"/>
+                <filter name="nurse" string="Nurses" domain="[('role', '=', 'nurse')]"/>
+                <filter name="lab" string="Lab Technicians" domain="[('role', '=', 'lab_technician')]"/>
+                <filter name="pharmacist" string="Pharmacists" domain="[('role', '=', 'pharmacist')]"/>
+                <filter name="admin" string="Administrative" domain="[('role', '=', 'admin')]"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_role" string="Role" context="{'group_by': 'role'}"/>
+                    <filter name="group_department" string="Department" context="{'group_by': 'department_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_staff" model="ir.actions.act_window">
+        <field name="name">Staff Members</field>
+        <field name="res_model">clinic.staff</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add your clinic staff</p>
+            <p>Receptionists, nurses, lab technicians, pharmacists and administrative staff. Linking a user grants the role's access rights.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_patient" model="ir.actions.report">
+        <field name="name">Medical Record</field>
+        <field name="model">clinic.patient</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">clinic_management.report_patient</field>
+        <field name="report_file">clinic_management.report_patient</field>
+        <field name="print_report_name">'Medical Record - %s' % object.patient_ref</field>
+        <field name="binding_model_id" ref="model_clinic_patient"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_admission" model="ir.actions.report">
+        <field name="name">Admission Form</field>
+        <field name="model">clinic.admission</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">clinic_management.report_admission</field>
+        <field name="report_file">clinic_management.report_admission</field>
+        <field name="print_report_name">'Admission - %s' % object.name</field>
+        <field name="binding_model_id" ref="model_clinic_admission"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_discharge" model="ir.actions.report">
+        <field name="name">Discharge Summary</field>
+        <field name="model">clinic.discharge</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">clinic_management.report_discharge</field>
+        <field name="report_file">clinic_management.report_discharge</field>
+        <field name="print_report_name">'Discharge - %s' % object.name</field>
+        <field name="binding_model_id" ref="model_clinic_discharge"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_prescription" model="ir.actions.report">
+        <field name="name">Prescription</field>
+        <field name="model">clinic.prescription</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">clinic_management.report_prescription</field>
+        <field name="report_file">clinic_management.report_prescription</field>
+        <field name="print_report_name">'Prescription - %s' % object.name</field>
+        <field name="binding_model_id" ref="model_clinic_prescription"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="action_report_lab" model="ir.actions.report">
+        <field name="name">Lab Report</field>
+        <field name="model">clinic.lab.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">clinic_management.report_lab</field>
+        <field name="report_file">clinic_management.report_lab</field>
+        <field name="print_report_name">'Lab Report - %s' % object.name</field>
+        <field name="binding_model_id" ref="model_clinic_lab_request"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

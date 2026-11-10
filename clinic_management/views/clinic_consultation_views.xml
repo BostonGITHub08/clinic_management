@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_clinic_consultation_list" model="ir.ui.view">
+        <field name="name">clinic.consultation.list</field>
+        <field name="model">clinic.consultation</field>
+        <field name="arch" type="xml">
+            <list string="OPD Consultations">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="blood_pressure" optional="show"/>
+                <field name="temperature" optional="hide"/>
+                <field name="diagnosis" optional="show"/>
+                <field name="follow_up_date" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'in_progress'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_consultation_form" model="ir.ui.view">
+        <field name="name">clinic.consultation.form</field>
+        <field name="model">clinic.consultation</field>
+        <field name="arch" type="xml">
+            <form string="Consultation">
+                <header>
+                    <button name="action_start" type="object" string="Start Consultation" class="btn-primary"
+                            invisible="state != 'draft'" groups="clinic_management.group_clinic_doctor"/>
+                    <button name="action_done" type="object" string="Complete" class="btn-primary"
+                            invisible="state != 'in_progress'" groups="clinic_management.group_clinic_doctor"/>
+                    <button name="action_create_prescription" type="object" string="Prescribe Medicines"
+                            invisible="state not in ('in_progress', 'done')" groups="clinic_management.group_clinic_doctor"/>
+                    <button name="action_create_lab_request" type="object" string="Request Lab Test"
+                            invisible="state not in ('in_progress', 'done')" groups="clinic_management.group_clinic_doctor"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state not in ('draft', 'in_progress')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_prescriptions" type="object" class="oe_stat_button" icon="fa-medkit">
+                            <field name="prescription_count" widget="statinfo" string="Prescriptions"/>
+                        </button>
+                        <button name="action_view_lab_requests" type="object" class="oe_stat_button" icon="fa-flask">
+                            <field name="lab_request_count" widget="statinfo" string="Lab Tests"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id" readonly="appointment_id or state == 'done'"/>
+                            <field name="patient_age"/>
+                            <field name="patient_gender"/>
+                            <field name="patient_allergies" invisible="not patient_allergies" class="text-danger"/>
+                        </group>
+                        <group>
+                            <field name="doctor_id" readonly="state == 'done'"/>
+                            <field name="date"/>
+                            <field name="appointment_id" invisible="not appointment_id"/>
+                            <field name="follow_up_date" readonly="state == 'done'"/>
+                            <field name="follow_up_appointment_id" invisible="not follow_up_appointment_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Vital Signs" name="vitals">
+                            <group>
+                                <group>
+                                    <field name="temperature"/>
+                                    <label for="bp_systolic" string="Blood Pressure"/>
+                                    <div class="d-flex gap-1 align-items-center">
+                                        <field name="bp_systolic" class="oe_inline" placeholder="120"/>
+                                        <span>/</span>
+                                        <field name="bp_diastolic" class="oe_inline" placeholder="80"/>
+                                        <span class="text-muted">mmHg</span>
+                                    </div>
+                                    <field name="pulse"/>
+                                    <field name="respiratory_rate"/>
+                                </group>
+                                <group>
+                                    <field name="weight"/>
+                                    <field name="height"/>
+                                    <field name="bmi"/>
+                                    <field name="spo2"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Diagnosis &amp; Treatment" name="diagnosis">
+                            <group>
+                                <field name="symptoms"/>
+                                <field name="diagnosis" readonly="state == 'done'"/>
+                                <field name="treatment_plan"/>
+                            </group>
+                            <label for="doctor_notes"/>
+                            <field name="doctor_notes" placeholder="Doctor's notes..."/>
+                        </page>
+                        <page string="Prescriptions" name="prescriptions">
+                            <field name="prescription_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Lab Tests" name="lab">
+                            <field name="lab_request_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="request_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_consultation_search" model="ir.ui.view">
+        <field name="name">clinic.consultation.search</field>
+        <field name="model">clinic.consultation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="diagnosis"/>
+                <filter name="waiting" string="Waiting" domain="[('state', '=', 'draft')]"/>
+                <filter name="in_progress" string="In Consultation" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="done" string="Completed" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="filter_date" string="Date" date="date"/>
+                <group>
+                    <filter name="group_doctor" string="Doctor" context="{'group_by': 'doctor_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_consultation" model="ir.actions.act_window">
+        <field name="name">OPD Consultations</field>
+        <field name="res_model">clinic.consultation</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No consultations yet</p>
+            <p>Consultations are created when a patient checks in for an appointment, or directly here for walk-ins.</p>
+        </field>
+    </record>
+</odoo>

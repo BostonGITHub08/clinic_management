@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_clinic_prescription_list" model="ir.ui.view">
+        <field name="name">clinic.prescription.list</field>
+        <field name="model">clinic.prescription</field>
+        <field name="arch" type="xml">
+            <list string="Prescriptions" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="admission_id" optional="hide"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="invoice_payment_state" widget="badge" optional="hide" groups="account.group_account_invoice"/>
+                <field name="state" widget="badge" decoration-success="state == 'dispensed'" decoration-info="state == 'confirmed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_prescription_form" model="ir.ui.view">
+        <field name="name">clinic.prescription.form</field>
+        <field name="model">clinic.prescription</field>
+        <field name="arch" type="xml">
+            <form string="Prescription">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_dispense" type="object" string="Dispense Medicines" class="btn-primary"
+                            invisible="state != 'confirmed'" groups="clinic_management.group_clinic_pharmacist"
+                            confirm="The medicines will be delivered from stock. Continue?"/>
+                    <button name="action_create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice"
+                            invisible="state not in ('confirmed', 'dispensed') or invoice_id or admission_id"/>
+                    <button name="%(action_report_prescription)d" type="action" string="Print" invisible="state == 'draft'"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state not in ('draft', 'confirmed')"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,dispensed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_picking" type="object" class="oe_stat_button" icon="fa-truck"
+                                invisible="not picking_id" string="Delivery" groups="stock.group_stock_user"/>
+                        <button name="action_view_invoice" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not invoice_id" groups="account.group_account_invoice">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Invoice</span>
+                                <span class="o_stat_value"><field name="invoice_payment_state"/></span>
+                            </div>
+                        </button>
+                    </div>
+                    <field name="picking_id" invisible="1"/>
+                    <field name="invoice_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id" readonly="state != 'draft'"/>
+                            <field name="doctor_id" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="consultation_id" readonly="state != 'draft'"/>
+                            <field name="admission_id" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state != 'draft'">
+                        <list editable="bottom">
+                            <field name="product_id" options="{'no_create': True}"/>
+                            <field name="dosage"/>
+                            <field name="frequency"/>
+                            <field name="duration"/>
+                            <field name="quantity"/>
+                            <field name="instructions"/>
+                            <field name="qty_available" optional="show" decoration-danger="qty_available &lt; quantity"/>
+                            <field name="price_unit" optional="show"/>
+                            <field name="subtotal" sum="Total"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="notes" placeholder="Additional advice for the patient..."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_prescription_search" model="ir.ui.view">
+        <field name="name">clinic.prescription.search</field>
+        <field name="model">clinic.prescription</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="line_ids" string="Medicine" filter_domain="[('line_ids.product_id', 'ilike', self)]"/>
+                <filter name="to_dispense" string="To Dispense" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="dispensed" string="Dispensed" domain="[('state', '=', 'dispensed')]"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter name="filter_date" string="Date" date="date"/>
+                <group>
+                    <filter name="group_doctor" string="Doctor" context="{'group_by': 'doctor_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_prescription" model="ir.actions.act_window">
+        <field name="name">Prescriptions</field>
+        <field name="res_model">clinic.prescription</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No prescriptions yet</p>
+            <p>Doctors prescribe from a consultation; pharmacists dispense, which delivers the medicines from Inventory.</p>
+        </field>
+    </record>
+
+    <!-- medicines (products) -->
+    <record id="view_product_template_form_clinic" model="ir.ui.view">
+        <field name="name">product.template.form.clinic</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="is_medicine"/>
+                <field name="medicine_category_id" invisible="not is_medicine"/>
+                <field name="medicine_form" invisible="not is_medicine"/>
+                <field name="strength" invisible="not is_medicine"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_template_list_medicine" model="ir.ui.view">
+        <field name="name">product.template.list.medicine</field>
+        <field name="model">product.template</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Medicines">
+                <field name="default_code"/>
+                <field name="name"/>
+                <field name="medicine_category_id"/>
+                <field name="medicine_form"/>
+                <field name="strength"/>
+                <field name="list_price"/>
+                <field name="qty_available" decoration-danger="qty_available &lt;= 0"/>
+                <field name="uom_id" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_template_search_medicine" model="ir.ui.view">
+        <field name="name">product.template.search.medicine</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="medicine_category_id"/>
+                <filter name="medicine" string="Medicines" domain="[('is_medicine', '=', True)]"/>
+                <filter name="group_medicine_category" string="Medicine Category" context="{'group_by': 'medicine_category_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_clinic_medicine" model="ir.actions.act_window">
+        <field name="name">Medicines</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('is_medicine', '=', True)]</field>
+        <field name="context">{'default_is_medicine': True, 'default_type': 'consu', 'default_is_storable': True}</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_product_template_list_medicine')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add medicines</p>
+            <p>Medicines are tracked products: their stock is managed in Inventory and reduced when a prescription is dispensed.</p>
+        </field>
+    </record>
+
+    <record id="action_clinic_medicine_category" model="ir.actions.act_window">
+        <field name="name">Medicine Categories</field>
+        <field name="res_model">clinic.medicine.category</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_clinic_medicine_category_list" model="ir.ui.view">
+        <field name="name">clinic.medicine.category.list</field>
+        <field name="model">clinic.medicine.category</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+</odoo>

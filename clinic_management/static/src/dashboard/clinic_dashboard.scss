@@ -1,0 +1,663 @@
+// Clinic dashboard: hero header, animated KPI cards, chart panels and lists.
+
+$clinic-palette: (
+    teal: #0e9f9a,
+    blue: #3b82f6,
+    green: #22c55e,
+    red: #ef4444,
+    amber: #f59e0b,
+    violet: #8b5cf6,
+);
+
+@keyframes clinic-rise {
+    from { opacity: 0; transform: translateY(18px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes clinic-slide-in {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes clinic-grow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+@keyframes clinic-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(24px, -18px) scale(1.08); }
+}
+
+@keyframes clinic-shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+}
+
+.o_clinic_dashboard {
+    --clinic-radius: 18px;
+    --clinic-card-bg: var(--bs-body-bg);
+    --clinic-border: var(--bs-border-color-translucent);
+    --clinic-muted: var(--bs-secondary-color);
+    --clinic-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.05);
+    --clinic-shadow-hover: 0 10px 30px rgba(15, 23, 42, 0.12);
+
+    background:
+        radial-gradient(1200px 400px at 0% 0%, rgba(14, 159, 154, 0.07), transparent 60%),
+        radial-gradient(900px 400px at 100% 0%, rgba(139, 92, 246, 0.06), transparent 60%),
+        $o-webclient-background-color;
+
+    .o_clinic_wrap {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 20px 16px 40px;
+
+        @include media-breakpoint-up(lg) {
+            padding: 24px 28px 48px;
+        }
+    }
+
+    // ------------------------------------------------------------ colors
+    @each $name, $color in $clinic-palette {
+        .o_clinic_c_#{$name} {
+            --clinic-color: #{$color};
+            --clinic-soft: #{rgba($color, 0.12)};
+            --clinic-grad: linear-gradient(135deg, #{lighten($color, 8%)}, #{darken($color, 8%)});
+        }
+        .o_clinic_bg_#{$name} {
+            background-color: $color;
+        }
+    }
+
+    // ------------------------------------------------------------ entrance animation
+    .o_clinic_reveal {
+        animation: clinic-rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+    }
+
+    // ------------------------------------------------------------ hero
+    .o_clinic_hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        padding: 28px 24px 20px;
+        margin-bottom: 22px;
+        color: #fff;
+        background: linear-gradient(120deg, #0b6e6b 0%, #0e9f9a 45%, #14b8c4 100%);
+        box-shadow: 0 18px 40px rgba(14, 159, 154, 0.28);
+
+        @include media-breakpoint-up(lg) {
+            padding: 34px 36px 24px;
+        }
+    }
+
+    .o_clinic_blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(2px);
+        background: rgba(255, 255, 255, 0.12);
+        animation: clinic-float 12s ease-in-out infinite;
+        pointer-events: none;
+
+        &.o_clinic_blob_1 { width: 260px; height: 260px; top: -90px; right: -40px; }
+        &.o_clinic_blob_2 { width: 160px; height: 160px; bottom: -70px; right: 28%; animation-delay: -4s; background: rgba(255, 255, 255, 0.08); }
+        &.o_clinic_blob_3 { width: 110px; height: 110px; top: 20%; left: 46%; animation-delay: -8s; background: rgba(255, 255, 255, 0.06); }
+    }
+
+    .o_clinic_hero_body {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .o_clinic_hero_date {
+        font-size: 0.85rem;
+        opacity: 0.85;
+        letter-spacing: 0.02em;
+    }
+
+    .o_clinic_hero_title {
+        margin: 6px 0 6px;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #fff;
+
+        @include media-breakpoint-up(lg) {
+            font-size: 2.1rem;
+        }
+    }
+
+    .o_clinic_hero_sub {
+        margin: 0;
+        opacity: 0.92;
+    }
+
+    .o_clinic_hero_updated {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 2px 10px;
+        font-size: 0.78rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.16);
+    }
+
+    .o_clinic_hero_actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .o_clinic_quick {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 12px;
+        color: #fff;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.14);
+        backdrop-filter: blur(6px);
+        transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+
+        i {
+            font-size: 1.05rem;
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.26);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    .o_clinic_toolbar {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-top: 22px;
+    }
+
+    .o_clinic_segment {
+        display: inline-flex;
+        padding: 4px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.16);
+
+        button {
+            border: 0;
+            padding: 7px 14px;
+            border-radius: 9px;
+            white-space: nowrap;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            background: transparent;
+            transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+
+            &:hover {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.12);
+            }
+
+            &.active {
+                color: #0b6e6b;
+                background: #fff;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+        }
+
+        @include media-breakpoint-down(sm) {
+            width: 100%;
+
+            button {
+                flex: 1 1 0;
+                padding: 7px 4px;
+                font-size: 0.8rem;
+            }
+        }
+    }
+
+    .o_clinic_dates {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: clinic-slide-in 0.3s ease both;
+
+        input {
+            border: 0;
+            border-radius: 10px;
+            padding: 6px 10px;
+            color: #0f172a;
+            background: rgba(255, 255, 255, 0.95);
+        }
+    }
+
+    .o_clinic_refresh {
+        width: 38px;
+        height: 38px;
+        border: 0;
+        border-radius: 10px;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.16);
+        transition: background-color 0.2s ease, transform 0.4s ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+    }
+
+    // ------------------------------------------------------------ KPI cards
+    .o_clinic_kpis {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+
+        @include media-breakpoint-up(md) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        @include media-breakpoint-up(xl) {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 18px;
+        }
+    }
+
+    .o_clinic_kpi {
+        position: relative;
+        overflow: hidden;
+        padding: 18px;
+        border: 1px solid var(--clinic-border);
+        border-radius: var(--clinic-radius);
+        background: var(--clinic-card-bg);
+        box-shadow: var(--clinic-shadow);
+        cursor: pointer;
+        transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 4px;
+            background: var(--clinic-grad);
+            transform: scaleX(0.25);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+        }
+
+        &:hover {
+            transform: translateY(-4px);
+            border-color: var(--clinic-color);
+            box-shadow: var(--clinic-shadow-hover);
+
+            &::before {
+                transform: scaleX(1);
+            }
+
+            .o_clinic_kpi_icon {
+                transform: scale(1.08) rotate(-6deg);
+            }
+
+            .o_clinic_kpi_ghost {
+                transform: rotate(-12deg) scale(1.1);
+                opacity: 0.09;
+            }
+
+            .o_clinic_kpi_go {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    }
+
+    .o_clinic_kpi_ghost {
+        position: absolute;
+        right: -10px;
+        bottom: -14px;
+        font-size: 5.5rem;
+        color: var(--clinic-color);
+        opacity: 0.05;
+        transform: rotate(-12deg);
+        transition: transform 0.4s ease, opacity 0.4s ease;
+        pointer-events: none;
+    }
+
+    .o_clinic_kpi_icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        margin-bottom: 14px;
+        border-radius: 13px;
+        color: #fff;
+        font-size: 1.2rem;
+        background: var(--clinic-grad);
+        box-shadow: 0 6px 14px var(--clinic-soft);
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .o_clinic_kpi_value {
+        font-size: 1.65rem;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .o_clinic_kpi_label {
+        margin-top: 4px;
+        font-weight: 600;
+        color: var(--clinic-muted);
+    }
+
+    .o_clinic_kpi_sub {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        margin-top: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--clinic-color);
+
+        span {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .o_clinic_kpi_go {
+        opacity: 0;
+        transform: translateX(-6px);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .o_clinic_kpi_track {
+        height: 6px;
+        margin-top: 10px;
+        border-radius: 999px;
+        background: var(--clinic-soft);
+        overflow: hidden;
+    }
+
+    .o_clinic_kpi_fill {
+        height: 100%;
+        border-radius: inherit;
+        background: var(--clinic-grad);
+        transform-origin: left;
+        transition: width 0.8s ease;
+        animation: clinic-grow 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s both;
+    }
+
+    // ------------------------------------------------------------ panels
+    .o_clinic_grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+        margin-bottom: 22px;
+
+        @include media-breakpoint-up(lg) {
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        .o_clinic_span_4 { grid-column: span 6; }
+        .o_clinic_span_5 { grid-column: span 5; }
+        .o_clinic_span_7 { grid-column: span 7; }
+    }
+
+    @include media-breakpoint-up(xxl) {
+        .o_clinic_span_4 { grid-column: span 4; }
+    }
+
+    .o_clinic_panel {
+        padding: 20px;
+        border: 1px solid var(--clinic-border);
+        border-radius: var(--clinic-radius);
+        background: var(--clinic-card-bg);
+        box-shadow: var(--clinic-shadow);
+        transition: box-shadow 0.25s ease;
+
+        &:hover {
+            box-shadow: var(--clinic-shadow-hover);
+        }
+    }
+
+    .o_clinic_panel_head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+
+        h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        small {
+            color: var(--clinic-muted);
+        }
+    }
+
+    .o_clinic_panel_icon {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        color: var(--clinic-color);
+        background: var(--clinic-soft);
+    }
+
+    .o_clinic_link {
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+        color: #0e9f9a;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .o_clinic_chart {
+        position: relative;
+        height: 280px;
+    }
+
+    // ------------------------------------------------------------ beds
+    .o_clinic_beds {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+        align-items: center;
+
+        @include media-breakpoint-up(sm) {
+            grid-template-columns: 190px minmax(0, 1fr);
+        }
+    }
+
+    .o_clinic_chart_donut {
+        height: 190px;
+    }
+
+    .o_clinic_legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        margin-bottom: 14px;
+        font-size: 0.82rem;
+        color: var(--clinic-muted);
+
+        b {
+            margin-left: 4px;
+            color: var(--bs-body-color);
+        }
+    }
+
+    .o_clinic_dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        margin-right: 6px;
+        border-radius: 50%;
+    }
+
+    .o_clinic_bed_row {
+        margin-bottom: 12px;
+    }
+
+    .o_clinic_bed_row_head {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        font-size: 0.88rem;
+        font-weight: 600;
+
+        small {
+            font-weight: 500;
+            color: var(--clinic-muted);
+        }
+    }
+
+    .o_clinic_bar {
+        height: 8px;
+        border-radius: 999px;
+        background: var(--bs-tertiary-bg);
+        overflow: hidden;
+    }
+
+    .o_clinic_bar_fill {
+        height: 100%;
+        border-radius: inherit;
+        transform-origin: left;
+        animation: clinic-grow 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+        &.o_clinic_bar_green { background: linear-gradient(90deg, #4ade80, #16a34a); }
+        &.o_clinic_bar_amber { background: linear-gradient(90deg, #fbbf24, #d97706); }
+        &.o_clinic_bar_red { background: linear-gradient(90deg, #f87171, #dc2626); }
+    }
+
+    // ------------------------------------------------------------ lists
+    .o_clinic_rows {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .o_clinic_row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        margin: 0 -10px;
+        border-radius: 12px;
+        cursor: pointer;
+        animation: clinic-slide-in 0.45s ease backwards;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+            background: var(--bs-tertiary-bg);
+            transform: translateX(4px);
+        }
+    }
+
+    .o_clinic_avatar {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 700;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .o_clinic_row_main {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .o_clinic_row_title {
+        overflow: hidden;
+        font-weight: 600;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .o_clinic_row_meta {
+        overflow: hidden;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: var(--clinic-muted);
+    }
+
+    .o_clinic_row_side {
+        flex: 0 0 auto;
+        color: var(--clinic-muted);
+    }
+
+    .o_clinic_pill {
+        flex: 0 0 auto;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        white-space: nowrap;
+
+        &.o_clinic_pill_grey { color: #475569; background: rgba(100, 116, 139, 0.14); }
+        &.o_clinic_pill_blue { color: #2563eb; background: rgba(59, 130, 246, 0.14); }
+        &.o_clinic_pill_teal { color: #0e7f7b; background: rgba(14, 159, 154, 0.14); }
+        &.o_clinic_pill_amber { color: #b45309; background: rgba(245, 158, 11, 0.16); }
+        &.o_clinic_pill_green { color: #15803d; background: rgba(34, 197, 94, 0.15); }
+        &.o_clinic_pill_red { color: #dc2626; background: rgba(239, 68, 68, 0.14); }
+    }
+
+    .o_clinic_empty {
+        padding: 24px 0;
+        text-align: center;
+        color: var(--clinic-muted);
+    }
+
+    // ------------------------------------------------------------ loading state
+    &.o_clinic_loading {
+        .o_clinic_kpi_value,
+        .o_clinic_chart {
+            background: linear-gradient(90deg, transparent 0%, var(--bs-tertiary-bg) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: clinic-shimmer 1.2s linear infinite;
+            border-radius: 8px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+}

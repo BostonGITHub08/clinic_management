@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- room categories -->
+    <record id="view_clinic_room_category_list" model="ir.ui.view">
+        <field name="name">clinic.room.category.list</field>
+        <field name="model">clinic.room.category</field>
+        <field name="arch" type="xml">
+            <list string="Room Categories" editable="bottom">
+                <field name="name"/>
+                <field name="daily_rate"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="description"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_clinic_room_category" model="ir.actions.act_window">
+        <field name="name">Room Categories</field>
+        <field name="res_model">clinic.room.category</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- rooms -->
+    <record id="view_clinic_room_list" model="ir.ui.view">
+        <field name="name">clinic.room.list</field>
+        <field name="model">clinic.room</field>
+        <field name="arch" type="xml">
+            <list string="Rooms">
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="department_id"/>
+                <field name="floor"/>
+                <field name="bed_count"/>
+                <field name="available_bed_count"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_room_form" model="ir.ui.view">
+        <field name="name">clinic.room.form</field>
+        <field name="model">clinic.room</field>
+        <field name="arch" type="xml">
+            <form string="Room">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. 101"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="category_id"/>
+                            <field name="department_id"/>
+                        </group>
+                        <group>
+                            <field name="floor"/>
+                            <field name="available_bed_count" string="Available Beds"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="bed_ids" context="{'default_room_id': id}">
+                        <list editable="bottom">
+                            <field name="name"/>
+                            <field name="bed_type"/>
+                            <field name="daily_charge"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="under_maintenance"/>
+                            <field name="patient_id"/>
+                            <field name="state" widget="badge" decoration-success="state == 'available'"
+                                   decoration-danger="state == 'occupied'" decoration-warning="state == 'maintenance'"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_clinic_room" model="ir.actions.act_window">
+        <field name="name">Rooms</field>
+        <field name="res_model">clinic.room</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- beds -->
+    <record id="view_clinic_bed_list" model="ir.ui.view">
+        <field name="name">clinic.bed.list</field>
+        <field name="model">clinic.bed</field>
+        <field name="arch" type="xml">
+            <list string="Beds">
+                <field name="room_id"/>
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="bed_type"/>
+                <field name="daily_charge"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="patient_id"/>
+                <field name="admission_date"/>
+                <field name="state" widget="badge" decoration-success="state == 'available'"
+                       decoration-danger="state == 'occupied'" decoration-warning="state == 'maintenance'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_bed_kanban" model="ir.ui.view">
+        <field name="name">clinic.bed.kanban</field>
+        <field name="model">clinic.bed</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="room_id" group_create="0" records_draggable="0" class="o_clinic_bed_kanban">
+                <field name="state"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card" t-attf-class="border-start border-4 #{record.state.raw_value == 'available' ? 'border-success' : (record.state.raw_value == 'occupied' ? 'border-danger' : 'border-warning')}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-5"><i title="Bed" class="fa fa-bed me-1"/><field name="name"/></span>
+                            <field name="state" widget="badge" decoration-success="state == 'available'"
+                                   decoration-danger="state == 'occupied'" decoration-warning="state == 'maintenance'"/>
+                        </div>
+                        <div class="text-muted"><field name="bed_type"/> · <field name="daily_charge" widget="monetary"/>/day</div>
+                        <div t-if="record.patient_id.raw_value" class="mt-1">
+                            <i title="Patient" class="fa fa-user me-1"/><field name="patient_id"/>
+                            <div class="small text-muted">Since <field name="admission_date"/></div>
+                        </div>
+                        <footer t-if="record.state.raw_value != 'maintenance'">
+                            <button t-if="record.state.raw_value == 'available'" name="action_new_admission" type="object"
+                                    class="btn btn-sm btn-primary" groups="clinic_management.group_clinic_receptionist,clinic_management.group_clinic_nurse">Admit Patient</button>
+                            <button t-if="record.state.raw_value == 'occupied'" name="action_view_admission" type="object"
+                                    class="btn btn-sm btn-secondary">View Admission</button>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_clinic_bed_form" model="ir.ui.view">
+        <field name="name">clinic.bed.form</field>
+        <field name="model">clinic.bed</field>
+        <field name="arch" type="xml">
+            <form string="Bed">
+                <header>
+                    <button name="action_new_admission" type="object" string="Admit Patient" class="btn-primary" invisible="state != 'available'"
+                            groups="clinic_management.group_clinic_receptionist,clinic_management.group_clinic_nurse"/>
+                    <button name="action_toggle_maintenance" type="object" string="Set Under Maintenance" invisible="state != 'available'"/>
+                    <button name="action_toggle_maintenance" type="object" string="Maintenance Done" invisible="state != 'maintenance'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_admission" type="object" class="oe_stat_button" icon="fa-user"
+                                invisible="not admission_id" string="Admission"/>
+                    </div>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. B1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="room_id"/>
+                            <field name="category_id"/>
+                            <field name="bed_type"/>
+                            <field name="daily_charge"/>
+                        </group>
+                        <group>
+                            <field name="under_maintenance" invisible="1"/>
+                            <field name="admission_id"/>
+                            <field name="patient_id"/>
+                            <field name="admission_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_bed_search" model="ir.ui.view">
+        <field name="name">clinic.bed.search</field>
+        <field name="model">clinic.bed</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="patient_id"/>
+                <filter name="available" string="Available" domain="[('state', '=', 'available')]"/>
+                <filter name="occupied" string="Occupied" domain="[('state', '=', 'occupied')]"/>
+                <filter name="maintenance" string="Maintenance" domain="[('state', '=', 'maintenance')]"/>
+                <group>
+                    <filter name="group_room" string="Room" context="{'group_by': 'room_id'}"/>
+                    <filter name="group_category" string="Room Category" context="{'group_by': 'category_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_type" string="Bed Type" context="{'group_by': 'bed_type'}"/>
+                </group>
+                <searchpanel>
+                    <field name="category_id" icon="fa-th-large" enable_counters="1"/>
+                    <field name="state" icon="fa-circle" enable_counters="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_bed" model="ir.actions.act_window">
+        <field name="name">Bed Board</field>
+        <field name="res_model">clinic.bed</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create rooms and beds</p>
+            <p>Beds are occupied automatically on admission and released on discharge.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_clinic_doctor_list" model="ir.ui.view">
+        <field name="name">clinic.doctor.list</field>
+        <field name="model">clinic.doctor</field>
+        <field name="arch" type="xml">
+            <list string="Doctors">
+                <field name="doctor_ref"/>
+                <field name="name"/>
+                <field name="specialization_id"/>
+                <field name="department_id"/>
+                <field name="phone"/>
+                <field name="consultation_fee"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="available_day_ids" widget="many2many_tags" optional="show"/>
+                <field name="work_from" widget="float_time" optional="show"/>
+                <field name="work_to" widget="float_time" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_doctor_kanban" model="ir.ui.view">
+        <field name="name">clinic.doctor.kanban</field>
+        <field name="model">clinic.doctor</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card" class="flex-row">
+                        <aside class="o_kanban_aside_full">
+                            <field name="image_128" widget="image" options="{'img_class': 'object-fit-cover'}" alt="Doctor"/>
+                        </aside>
+                        <main class="ms-2">
+                            <field name="name" class="fw-bold fs-5"/>
+                            <field name="specialization_id" class="text-primary"/>
+                            <field name="department_id" class="text-muted"/>
+                            <div><i title="Time" class="fa fa-clock-o me-1"/><field name="work_from" widget="float_time"/> - <field name="work_to" widget="float_time"/></div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <span>Fee: <field name="consultation_fee" widget="monetary"/></span>
+                                <span class="badge text-bg-info"><field name="today_appointment_count"/> today</span>
+                            </div>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_clinic_doctor_form" model="ir.ui.view">
+        <field name="name">clinic.doctor.form</field>
+        <field name="model">clinic.doctor</field>
+        <field name="arch" type="xml">
+            <form string="Doctor">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_appointments" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="appointment_count" widget="statinfo" string="Appointments"/>
+                        </button>
+                        <button name="action_view_patients" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="patient_count" widget="statinfo" string="Patients"/>
+                        </button>
+                        <button name="action_view_admissions" type="object" class="oe_stat_button" icon="fa-bed">
+                            <field name="admission_count" widget="statinfo" string="Admissions"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Inactive" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <h4 class="text-muted"><field name="doctor_ref" readonly="1"/></h4>
+                        <h1><field name="name" placeholder="Doctor Name"/></h1>
+                        <field name="specialization_id" placeholder="Specialization"/>
+                    </div>
+                    <group>
+                        <group string="Professional">
+                            <field name="department_id"/>
+                            <field name="qualification" placeholder="e.g. MBBS, FCPS"/>
+                            <field name="experience_years"/>
+                            <field name="consultation_fee"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group string="Contact">
+                            <field name="phone" widget="phone"/>
+                            <field name="mobile" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Availability">
+                            <field name="available_day_ids" widget="many2many_checkboxes"/>
+                            <label for="work_from" string="Working Hours"/>
+                            <div class="d-flex gap-2">
+                                <field name="work_from" widget="float_time" class="oe_inline"/>
+                                <span>to</span>
+                                <field name="work_to" widget="float_time" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Assigned Appointments" name="appointments">
+                            <field name="appointment_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="appointment_date"/>
+                                    <field name="patient_id"/>
+                                    <field name="appointment_type"/>
+                                    <field name="state" widget="badge" decoration-success="state == 'done'" decoration-danger="state in ('cancelled', 'no_show')" decoration-info="state in ('confirmed', 'checked_in', 'in_consultation')"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Assigned Patients" name="patients">
+                            <field name="patient_ids">
+                                <list>
+                                    <field name="patient_ref"/>
+                                    <field name="name"/>
+                                    <field name="gender"/>
+                                    <field name="age_display"/>
+                                    <field name="phone"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_doctor_search" model="ir.ui.view">
+        <field name="name">clinic.doctor.search</field>
+        <field name="model">clinic.doctor</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="specialization_id"/>
+                <field name="department_id"/>
+                <filter name="inactive" string="Inactive" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_specialization" string="Specialization" context="{'group_by': 'specialization_id'}"/>
+                    <filter name="group_department" string="Department" context="{'group_by': 'department_id'}"/>
+                </group>
+                <searchpanel>
+                    <field name="department_id" icon="fa-hospital-o" enable_counters="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_doctor" model="ir.actions.act_window">
+        <field name="name">Doctors</field>
+        <field name="res_model">clinic.doctor</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add your first doctor</p>
+            <p>Define specialization, consultation fee, available days and working hours.</p>
+        </field>
+    </record>
+</odoo>

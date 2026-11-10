@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_clinic_patient" model="ir.sequence">
+        <field name="name">Patient</field>
+        <field name="code">clinic.patient</field>
+        <field name="prefix">PAT</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_clinic_doctor" model="ir.sequence">
+        <field name="name">Doctor</field>
+        <field name="code">clinic.doctor</field>
+        <field name="prefix">DR</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_clinic_appointment" model="ir.sequence">
+        <field name="name">Appointment</field>
+        <field name="code">clinic.appointment</field>
+        <field name="prefix">APT/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_clinic_consultation" model="ir.sequence">
+        <field name="name">OPD Consultation</field>
+        <field name="code">clinic.consultation</field>
+        <field name="prefix">OPD/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_clinic_admission" model="ir.sequence">
+        <field name="name">Admission</field>
+        <field name="code">clinic.admission</field>
+        <field name="prefix">IPD/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_clinic_discharge" model="ir.sequence">
+        <field name="name">Discharge</field>
+        <field name="code">clinic.discharge</field>
+        <field name="prefix">DIS/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_clinic_prescription" model="ir.sequence">
+        <field name="name">Prescription</field>
+        <field name="code">clinic.prescription</field>
+        <field name="prefix">RX/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_clinic_lab_request" model="ir.sequence">
+        <field name="name">Lab Request</field>
+        <field name="code">clinic.lab.request</field>
+        <field name="prefix">LAB/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

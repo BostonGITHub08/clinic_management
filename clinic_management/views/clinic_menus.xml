@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_clinic_root" name="Clinic" sequence="20" web_icon="clinic_management,static/description/icon.png"
+              groups="group_clinic_user"/>
+
+    <menuitem id="menu_clinic_dashboard" name="Dashboard" parent="menu_clinic_root" action="action_clinic_dashboard" sequence="1"/>
+
+    <menuitem id="menu_clinic_patients" name="Patients" parent="menu_clinic_root" action="action_clinic_patient" sequence="10"/>
+
+    <menuitem id="menu_clinic_opd" name="OPD" parent="menu_clinic_root" sequence="20">
+        <menuitem id="menu_clinic_appointment_today" name="Today's Appointments" action="action_clinic_appointment_today" sequence="1"/>
+        <menuitem id="menu_clinic_appointment" name="All Appointments" action="action_clinic_appointment" sequence="2"/>
+        <menuitem id="menu_clinic_consultation" name="Consultations" action="action_clinic_consultation" sequence="3"/>
+    </menuitem>
+
+    <menuitem id="menu_clinic_ipd" name="IPD" parent="menu_clinic_root" sequence="30">
+        <menuitem id="menu_clinic_admission" name="Admissions" action="action_clinic_admission" sequence="1"/>
+        <menuitem id="menu_clinic_discharge" name="Discharges" action="action_clinic_discharge" sequence="2"/>
+        <menuitem id="menu_clinic_bed_board" name="Bed Board" action="action_clinic_bed" sequence="3"/>
+    </menuitem>
+
+    <menuitem id="menu_clinic_pharmacy" name="Pharmacy" parent="menu_clinic_root" sequence="40">
+        <menuitem id="menu_clinic_prescription" name="Prescriptions" action="action_clinic_prescription" sequence="1"/>
+        <menuitem id="menu_clinic_medicine" name="Medicines" action="action_clinic_medicine" sequence="2"/>
+    </menuitem>
+
+    <menuitem id="menu_clinic_lab" name="Laboratory" parent="menu_clinic_root" sequence="50">
+        <menuitem id="menu_clinic_lab_request" name="Lab Requests" action="action_clinic_lab_request" sequence="1"/>
+        <menuitem id="menu_clinic_lab_test" name="Test Catalog" action="action_clinic_lab_test_type" sequence="2"/>
+    </menuitem>
+
+    <menuitem id="menu_clinic_billing" name="Billing" parent="menu_clinic_root" sequence="60" groups="account.group_account_invoice">
+        <menuitem id="menu_clinic_invoice" name="Patient Invoices" action="action_clinic_invoice" sequence="1"/>
+        <menuitem id="menu_clinic_outstanding" name="Outstanding Payments" action="action_clinic_outstanding" sequence="2"/>
+        <menuitem id="menu_clinic_payment" name="Payments" action="action_clinic_payment" sequence="3"/>
+    </menuitem>
+
+    <menuitem id="menu_clinic_staff_root" name="Staff" parent="menu_clinic_root" sequence="70">
+        <menuitem id="menu_clinic_doctor" name="Doctors" action="action_clinic_doctor" sequence="1"/>
+        <menuitem id="menu_clinic_staff" name="Staff Members" action="action_clinic_staff" sequence="2"/>
+    </menuitem>
+
+    <menuitem id="menu_clinic_reporting" name="Reporting" parent="menu_clinic_root" sequence="80"
+              groups="group_clinic_doctor,group_clinic_receptionist">
+        <menuitem id="menu_report_patients" name="Patients" action="action_analysis_patients" sequence="1"/>
+        <menuitem id="menu_report_appointments" name="Appointments" action="action_analysis_appointments" sequence="2"/>
+        <menuitem id="menu_report_doctor" name="Doctor Performance" action="action_analysis_doctor_performance" sequence="3"/>
+        <menuitem id="menu_report_admissions" name="Admissions" action="action_analysis_admissions" sequence="4"/>
+        <menuitem id="menu_report_discharges" name="Discharges" action="action_analysis_discharges" sequence="5"/>
+        <menuitem id="menu_report_beds" name="Bed Occupancy" action="action_analysis_beds" sequence="6"/>
+        <menuitem id="menu_report_revenue" name="Revenue" action="action_analysis_revenue" sequence="7" groups="account.group_account_invoice"/>
+        <menuitem id="menu_report_outstanding" name="Outstanding Payments" action="action_clinic_outstanding" sequence="8" groups="account.group_account_invoice"/>
+        <menuitem id="menu_report_pharmacy" name="Pharmacy" action="action_analysis_pharmacy" sequence="9"/>
+        <menuitem id="menu_report_lab" name="Laboratory" action="action_analysis_lab" sequence="10"/>
+    </menuitem>
+
+    <menuitem id="menu_clinic_config" name="Configuration" parent="menu_clinic_root" sequence="100" groups="group_clinic_manager">
+        <menuitem id="menu_clinic_settings" name="Settings" action="action_clinic_settings" sequence="1"/>
+        <menuitem id="menu_clinic_department" name="Departments" action="action_clinic_department" sequence="10"/>
+        <menuitem id="menu_clinic_specialization" name="Specializations" action="action_clinic_specialization" sequence="11"/>
+        <menuitem id="menu_clinic_disease" name="Diseases &amp; Conditions" action="action_clinic_disease" sequence="12"/>
+        <menuitem id="menu_clinic_room_category" name="Room Categories" action="action_clinic_room_category" sequence="20"/>
+        <menuitem id="menu_clinic_room" name="Rooms" action="action_clinic_room" sequence="21"/>
+        <menuitem id="menu_clinic_bed" name="Beds" action="action_clinic_bed" sequence="22"/>
+        <menuitem id="menu_clinic_medicine_category" name="Medicine Categories" action="action_clinic_medicine_category" sequence="30"/>
+        <menuitem id="menu_clinic_lab_category" name="Lab Test Categories" action="action_clinic_lab_test_category" sequence="40"/>
+    </menuitem>
+</odoo>

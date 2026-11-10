@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- weekdays -->
+        <record id="weekday_mon" model="clinic.weekday"><field name="name">Monday</field><field name="code">0</field></record>
+        <record id="weekday_tue" model="clinic.weekday"><field name="name">Tuesday</field><field name="code">1</field></record>
+        <record id="weekday_wed" model="clinic.weekday"><field name="name">Wednesday</field><field name="code">2</field></record>
+        <record id="weekday_thu" model="clinic.weekday"><field name="name">Thursday</field><field name="code">3</field></record>
+        <record id="weekday_fri" model="clinic.weekday"><field name="name">Friday</field><field name="code">4</field></record>
+        <record id="weekday_sat" model="clinic.weekday"><field name="name">Saturday</field><field name="code">5</field></record>
+        <record id="weekday_sun" model="clinic.weekday"><field name="name">Sunday</field><field name="code">6</field></record>
+
+        <!-- billing products -->
+        <record id="product_category_clinic" model="product.category">
+            <field name="name">Clinic Services</field>
+        </record>
+        <record id="product_clinic_consultation" model="product.product">
+            <field name="name">Consultation Fee</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_clinic"/>
+            <field name="list_price">0</field>
+        </record>
+        <record id="product_clinic_admission" model="product.product">
+            <field name="name">Admission Charges</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_clinic"/>
+            <field name="list_price">0</field>
+        </record>
+        <record id="product_clinic_bed" model="product.product">
+            <field name="name">Room &amp; Bed Charges</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_clinic"/>
+            <field name="uom_id" ref="uom.product_uom_day"/>
+            <field name="list_price">0</field>
+        </record>
+        <record id="product_clinic_lab" model="product.product">
+            <field name="name">Laboratory Charges</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_clinic"/>
+            <field name="list_price">0</field>
+        </record>
+        <record id="product_clinic_nursing" model="product.product">
+            <field name="name">Nursing Care</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_clinic"/>
+            <field name="list_price">25</field>
+        </record>
+        <record id="product_clinic_procedure" model="product.product">
+            <field name="name">Minor Procedure</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product_category_clinic"/>
+            <field name="list_price">100</field>
+        </record>
+
+        <!-- specializations -->
+        <record id="spec_general" model="clinic.specialization"><field name="name">General Medicine</field></record>
+        <record id="spec_cardiology" model="clinic.specialization"><field name="name">Cardiology</field></record>
+        <record id="spec_pediatrics" model="clinic.specialization"><field name="name">Pediatrics</field></record>
+        <record id="spec_orthopedics" model="clinic.specialization"><field name="name">Orthopedics</field></record>
+        <record id="spec_gynecology" model="clinic.specialization"><field name="name">Gynecology</field></record>
+        <record id="spec_dermatology" model="clinic.specialization"><field name="name">Dermatology</field></record>
+        <record id="spec_ent" model="clinic.specialization"><field name="name">ENT</field></record>
+
+        <!-- conditions -->
+        <record id="disease_diabetes" model="clinic.disease"><field name="name">Diabetes</field><field name="color">1</field></record>
+        <record id="disease_hypertension" model="clinic.disease"><field name="name">Hypertension</field><field name="color">2</field></record>
+        <record id="disease_asthma" model="clinic.disease"><field name="name">Asthma</field><field name="color">3</field></record>
+        <record id="disease_heart" model="clinic.disease"><field name="name">Heart Disease</field><field name="color">9</field></record>
+        <record id="disease_thyroid" model="clinic.disease"><field name="name">Thyroid Disorder</field><field name="color">4</field></record>
+
+        <!-- medicine categories -->
+        <record id="med_cat_analgesic" model="clinic.medicine.category"><field name="name">Analgesics</field></record>
+        <record id="med_cat_antibiotic" model="clinic.medicine.category"><field name="name">Antibiotics</field></record>
+        <record id="med_cat_antihypertensive" model="clinic.medicine.category"><field name="name">Antihypertensives</field></record>
+        <record id="med_cat_antidiabetic" model="clinic.medicine.category"><field name="name">Antidiabetics</field></record>
+        <record id="med_cat_vitamin" model="clinic.medicine.category"><field name="name">Vitamins &amp; Supplements</field></record>
+
+        <!-- lab tests -->
+        <record id="lab_cat_hematology" model="clinic.lab.test.category"><field name="name">Hematology</field></record>
+        <record id="lab_cat_biochemistry" model="clinic.lab.test.category"><field name="name">Biochemistry</field></record>
+        <record id="lab_cat_microbiology" model="clinic.lab.test.category"><field name="name">Microbiology</field></record>
+        <record id="lab_cat_radiology" model="clinic.lab.test.category"><field name="name">Radiology</field></record>
+
+        <record id="lab_test_cbc" model="clinic.lab.test.type">
+            <field name="name">Complete Blood Count (CBC)</field><field name="code">CBC</field>
+            <field name="category_id" ref="lab_cat_hematology"/><field name="price">20</field>
+            <field name="normal_range">Hb 12 - 17</field><field name="unit">g/dL</field>
+        </record>
+        <record id="lab_test_esr" model="clinic.lab.test.type">
+            <field name="name">ESR</field><field name="code">ESR</field>
+            <field name="category_id" ref="lab_cat_hematology"/><field name="price">10</field>
+            <field name="normal_range">0 - 20</field><field name="unit">mm/hr</field>
+        </record>
+        <record id="lab_test_glucose" model="clinic.lab.test.type">
+            <field name="name">Fasting Blood Glucose</field><field name="code">FBS</field>
+            <field name="category_id" ref="lab_cat_biochemistry"/><field name="price">8</field>
+            <field name="normal_range">70 - 100</field><field name="unit">mg/dL</field>
+        </record>
+        <record id="lab_test_hba1c" model="clinic.lab.test.type">
+            <field name="name">HbA1c</field><field name="code">HBA1C</field>
+            <field name="category_id" ref="lab_cat_biochemistry"/><field name="price">25</field>
+            <field name="normal_range">4 - 5.6</field><field name="unit">%</field>
+        </record>
+        <record id="lab_test_lipid" model="clinic.lab.test.type">
+            <field name="name">Lipid Profile</field><field name="code">LIPID</field>
+            <field name="category_id" ref="lab_cat_biochemistry"/><field name="price">30</field>
+            <field name="normal_range">Cholesterol &lt; 200</field><field name="unit">mg/dL</field>
+        </record>
+        <record id="lab_test_lft" model="clinic.lab.test.type">
+            <field name="name">Liver Function Test</field><field name="code">LFT</field>
+            <field name="category_id" ref="lab_cat_biochemistry"/><field name="price">35</field>
+            <field name="normal_range">ALT 7 - 56</field><field name="unit">U/L</field>
+        </record>
+        <record id="lab_test_urine" model="clinic.lab.test.type">
+            <field name="name">Urine Culture</field><field name="code">UC</field>
+            <field name="category_id" ref="lab_cat_microbiology"/><field name="price">18</field>
+            <field name="sample_type">urine</field><field name="normal_range">No growth</field>
+        </record>
+        <record id="lab_test_xray" model="clinic.lab.test.type">
+            <field name="name">Chest X-Ray</field><field name="code">CXR</field>
+            <field name="category_id" ref="lab_cat_radiology"/><field name="price">40</field>
+            <field name="sample_type">imaging</field><field name="normal_range">Normal study</field>
+        </record>
+    </data>
+</odoo>

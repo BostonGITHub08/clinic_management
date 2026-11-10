@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_clinic_discharge_list" model="ir.ui.view">
+        <field name="name">clinic.discharge.list</field>
+        <field name="model">clinic.discharge</field>
+        <field name="arch" type="xml">
+            <list string="Discharges">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="admission_id"/>
+                <field name="doctor_id"/>
+                <field name="discharge_date"/>
+                <field name="discharge_type" optional="show"/>
+                <field name="approved_by_id" optional="show"/>
+                <field name="follow_up_date" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'approved'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_discharge_form" model="ir.ui.view">
+        <field name="name">clinic.discharge.form</field>
+        <field name="model">clinic.discharge</field>
+        <field name="arch" type="xml">
+            <form string="Discharge">
+                <header>
+                    <button name="action_approve" type="object" string="Doctor Approval" class="btn-primary"
+                            invisible="state != 'draft'" groups="clinic_management.group_clinic_doctor"/>
+                    <button name="action_discharge" type="object" string="Discharge Patient" class="btn-primary"
+                            invisible="state != 'approved'"/>
+                    <button name="action_create_prescription" type="object" string="Prescribe Medicines"
+                            invisible="state == 'done' or prescription_id" groups="clinic_management.group_clinic_doctor"/>
+                    <button name="action_print_report" type="object" string="Print Discharge Report" invisible="state == 'cancelled'"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state not in ('approved', 'cancelled')"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('done', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="admission_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="patient_id"/>
+                            <field name="admission_date"/>
+                            <field name="bed_id"/>
+                        </group>
+                        <group>
+                            <field name="doctor_id" readonly="state != 'draft'"/>
+                            <field name="discharge_date" readonly="state == 'done'"/>
+                            <field name="discharge_type" readonly="state == 'done'"/>
+                            <field name="approved_by_id" invisible="not approved_by_id"/>
+                            <field name="approval_date" invisible="not approval_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Summary" name="summary">
+                            <group>
+                                <field name="final_diagnosis" readonly="state != 'draft'"/>
+                            </group>
+                            <label for="treatment_summary"/>
+                            <field name="treatment_summary" readonly="state == 'done'" placeholder="Treatment given during the stay..."/>
+                        </page>
+                        <page string="Instructions &amp; Follow-up" name="instructions">
+                            <group>
+                                <group>
+                                    <field name="prescription_id" readonly="state == 'done'"/>
+                                    <field name="follow_up_date" readonly="state == 'done'"/>
+                                    <field name="follow_up_appointment_id" invisible="not follow_up_appointment_id"/>
+                                </group>
+                            </group>
+                            <label for="discharge_instructions"/>
+                            <field name="discharge_instructions" readonly="state == 'done'" placeholder="Diet, activity, wound care, warning signs..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_discharge_search" model="ir.ui.view">
+        <field name="name">clinic.discharge.search</field>
+        <field name="model">clinic.discharge</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <filter name="to_approve" string="Awaiting Approval" domain="[('state', '=', 'draft')]"/>
+                <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                <filter name="done" string="Discharged" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="filter_date" string="Discharge Date" date="discharge_date"/>
+                <group>
+                    <filter name="group_doctor" string="Doctor" context="{'group_by': 'doctor_id'}"/>
+                    <filter name="group_type" string="Discharge Type" context="{'group_by': 'discharge_type'}"/>
+                    <filter name="group_month" string="Month" context="{'group_by': 'discharge_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_discharge" model="ir.actions.act_window">
+        <field name="name">Discharges</field>
+        <field name="res_model">clinic.discharge</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No discharges yet</p>
+            <p>Use the Discharge button on an admission. A doctor approves, then the patient is discharged and the bed released.</p>
+        </field>
+    </record>
+</odoo>

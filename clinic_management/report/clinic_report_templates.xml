@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- shared patient header -->
+    <template id="report_patient_block">
+        <table class="table table-sm table-borderless mb-3" style="border: 1px solid #dee2e6;">
+            <tr>
+                <td><strong>Patient:</strong> <span t-field="patient.name"/></td>
+                <td><strong>Patient ID:</strong> <span t-field="patient.patient_ref"/></td>
+                <td><strong>Gender:</strong> <span t-field="patient.gender"/></td>
+            </tr>
+            <tr>
+                <td><strong>Age:</strong> <span t-field="patient.age_display"/></td>
+                <td><strong>Blood Group:</strong> <span t-field="patient.blood_group"/></td>
+                <td><strong>Phone:</strong> <span t-field="patient.phone"/></td>
+            </tr>
+        </table>
+    </template>
+
+    <!-- medical record -->
+    <template id="report_patient">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Medical Record</h2>
+                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o"/></t>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <strong>Address:</strong>
+                                <div t-field="o.partner_id" t-options="{'widget': 'contact', 'fields': ['address'], 'no_marker': True}"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Emergency Contact:</strong>
+                                <div><span t-field="o.emergency_contact_name"/> <span t-if="o.emergency_contact_relation">(<span t-field="o.emergency_contact_relation"/>)</span></div>
+                                <div t-field="o.emergency_contact_phone"/>
+                            </div>
+                        </div>
+                        <p t-if="o.disease_ids"><strong>Existing Diseases:</strong> <t t-esc="', '.join(o.disease_ids.mapped('name'))"/></p>
+                        <p t-if="o.allergies"><strong>Allergies:</strong> <span t-field="o.allergies"/></p>
+                        <div t-if="o.medical_history">
+                            <h5>Medical History</h5>
+                            <div t-field="o.medical_history"/>
+                        </div>
+                        <h5 class="mt-3">Visits</h5>
+                        <table class="table table-sm">
+                            <thead><tr><th>Date</th><th>Doctor</th><th>Diagnosis</th><th>BP</th><th>Temp</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="o.consultation_ids.filtered(lambda c: c.state == 'done')" t-as="c">
+                                    <td><span t-field="c.date" t-options="{'widget': 'date'}"/></td>
+                                    <td><span t-field="c.doctor_id"/></td>
+                                    <td><span t-field="c.diagnosis"/></td>
+                                    <td><span t-field="c.blood_pressure"/></td>
+                                    <td><span t-if="c.temperature" t-field="c.temperature"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h5 t-if="o.admission_ids">Admissions</h5>
+                        <table t-if="o.admission_ids" class="table table-sm">
+                            <thead><tr><th>Reference</th><th>Admitted</th><th>Discharged</th><th>Doctor</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="o.admission_ids" t-as="a">
+                                    <td><span t-field="a.name"/></td>
+                                    <td><span t-field="a.admission_date" t-options="{'widget': 'date'}"/></td>
+                                    <td><span t-field="a.discharge_date" t-options="{'widget': 'date'}"/></td>
+                                    <td><span t-field="a.doctor_id"/></td>
+                                    <td><span t-field="a.state"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- admission -->
+    <template id="report_admission">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Admission Form <span t-field="o.name"/></h2>
+                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
+                        <table class="table table-sm">
+                            <tr><td><strong>Admission Date</strong></td><td><span t-field="o.admission_date"/></td>
+                                <td><strong>Admission Type</strong></td><td><span t-field="o.admission_type"/></td></tr>
+                            <tr><td><strong>Attending Doctor</strong></td><td><span t-field="o.doctor_id"/></td>
+                                <td><strong>Department</strong></td><td><span t-field="o.department_id"/></td></tr>
+                            <tr><td><strong>Room / Bed</strong></td><td><span t-field="o.bed_id"/></td>
+                                <td><strong>Responsible Staff</strong></td><td><span t-field="o.responsible_staff_id"/></td></tr>
+                            <tr t-if="o.discharge_date"><td><strong>Discharge Date</strong></td><td><span t-field="o.discharge_date"/></td>
+                                <td><strong>Length of Stay</strong></td><td><span t-field="o.stay_days"/> day(s)</td></tr>
+                        </table>
+                        <p t-if="o.diagnosis"><strong>Provisional Diagnosis:</strong><br/><span t-field="o.diagnosis"/></p>
+                        <div t-if="o.notes"><strong>Notes:</strong><div t-field="o.notes"/></div>
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">______________________<br/>Patient / Guardian</div>
+                            <div class="col-6 text-center">______________________<br/>Attending Doctor</div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- discharge -->
+    <template id="report_discharge">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Discharge Summary <span t-field="o.name"/></h2>
+                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
+                        <table class="table table-sm">
+                            <tr><td><strong>Admission</strong></td><td><span t-field="o.admission_id.name"/></td>
+                                <td><strong>Room / Bed</strong></td><td><span t-field="o.admission_id.bed_id"/></td></tr>
+                            <tr><td><strong>Admitted On</strong></td><td><span t-field="o.admission_date"/></td>
+                                <td><strong>Discharged On</strong></td><td><span t-field="o.discharge_date"/></td></tr>
+                            <tr><td><strong>Doctor</strong></td><td><span t-field="o.doctor_id"/></td>
+                                <td><strong>Discharge Type</strong></td><td><span t-field="o.discharge_type"/></td></tr>
+                        </table>
+                        <h5>Final Diagnosis</h5>
+                        <p t-field="o.final_diagnosis"/>
+                        <div t-if="o.treatment_summary">
+                            <h5>Treatment Summary</h5>
+                            <div t-field="o.treatment_summary"/>
+                        </div>
+                        <div t-if="o.prescription_id">
+                            <h5>Prescribed Medicines</h5>
+                            <t t-call="clinic_management.report_prescription_lines"><t t-set="prescription" t-value="o.prescription_id"/></t>
+                        </div>
+                        <div t-if="o.discharge_instructions">
+                            <h5>Discharge Instructions</h5>
+                            <div t-field="o.discharge_instructions"/>
+                        </div>
+                        <p t-if="o.follow_up_date"><strong>Follow-up Date:</strong> <span t-field="o.follow_up_date"/>
+                            <t t-if="o.follow_up_appointment_id"> (Appointment <span t-field="o.follow_up_appointment_id.name"/>)</t></p>
+                        <div class="row mt-5">
+                            <div class="col-6"/>
+                            <div class="col-6 text-center">
+                                <t t-if="o.approved_by_id">Approved by <strong t-field="o.approved_by_id"/><br/>
+                                    <span t-field="o.approval_date"/></t>
+                                <t t-else="">______________________<br/>Doctor's Signature</t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- prescription -->
+    <template id="report_prescription_lines">
+        <table class="table table-sm">
+            <thead><tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th class="text-end">Qty</th><th>Instructions</th></tr></thead>
+            <tbody>
+                <tr t-foreach="prescription.line_ids" t-as="line">
+                    <td><span t-field="line.product_id.name"/> <span t-if="line.product_id.strength" t-field="line.product_id.strength"/></td>
+                    <td><span t-field="line.dosage"/></td>
+                    <td><span t-field="line.frequency"/></td>
+                    <td><span t-field="line.duration"/> day(s)</td>
+                    <td class="text-end"><span t-field="line.quantity"/></td>
+                    <td><span t-field="line.instructions"/></td>
+                </tr>
+            </tbody>
+        </table>
+    </template>
+
+    <template id="report_prescription">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="d-flex justify-content-between">
+                            <h2>Prescription <span t-field="o.name"/></h2>
+                            <div class="text-end"><strong>Date:</strong> <span t-field="o.date"/></div>
+                        </div>
+                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
+                        <p t-if="o.consultation_id.diagnosis"><strong>Diagnosis:</strong> <span t-field="o.consultation_id.diagnosis"/></p>
+                        <h3>&#8478;</h3>
+                        <t t-call="clinic_management.report_prescription_lines"><t t-set="prescription" t-value="o"/></t>
+                        <p t-if="o.notes"><strong>Advice:</strong> <span t-field="o.notes"/></p>
+                        <div class="row mt-5">
+                            <div class="col-6"/>
+                            <div class="col-6 text-center">______________________<br/><span t-field="o.doctor_id"/>
+                                <br/><small t-field="o.doctor_id.qualification"/></div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- lab report -->
+    <template id="report_lab">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Laboratory Report <span t-field="o.name"/></h2>
+                        <t t-call="clinic_management.report_patient_block"><t t-set="patient" t-value="o.patient_id"/></t>
+                        <table class="table table-sm table-borderless">
+                            <tr><td><strong>Referred By:</strong> <span t-field="o.doctor_id"/></td>
+                                <td><strong>Requested:</strong> <span t-field="o.request_date"/></td>
+                                <td><strong>Tested:</strong> <span t-field="o.test_date"/></td></tr>
+                        </table>
+                        <table class="table table-sm">
+                            <thead><tr><th>Test</th><th>Result</th><th>Unit</th><th>Normal Range</th><th>Remarks</th></tr></thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids.mapped('category_id')" t-as="category">
+                                    <tr><td colspan="5" class="fw-bold bg-light"><span t-field="category.name"/></td></tr>
+                                    <tr t-foreach="o.line_ids.filtered(lambda l: l.category_id == category)" t-as="line">
+                                        <td><span t-field="line.test_type_id.name"/></td>
+                                        <td t-att-class="'fw-bold text-danger' if line.is_abnormal else ''">
+                                            <span t-field="line.result"/> <t t-if="line.is_abnormal">(H/L)</t></td>
+                                        <td><span t-field="line.unit"/></td>
+                                        <td><span t-field="line.normal_range"/></td>
+                                        <td><span t-field="line.remarks"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <p t-if="o.notes"><strong>Clinical Notes:</strong> <span t-field="o.notes"/></p>
+                        <div class="row mt-5">
+                            <div class="col-6"/>
+                            <div class="col-6 text-center">______________________<br/>
+                                <span t-if="o.technician_id" t-field="o.technician_id"/><t t-else="">Laboratory Technician</t></div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

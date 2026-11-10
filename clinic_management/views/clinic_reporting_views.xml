@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Analysis views. Pivot views export to Excel (xlsx) with the standard download button. -->
+
+    <!-- patients -->
+    <record id="view_clinic_patient_graph" model="ir.ui.view">
+        <field name="name">clinic.patient.graph</field>
+        <field name="model">clinic.patient</field>
+        <field name="arch" type="xml">
+            <graph string="Patients" type="bar">
+                <field name="create_date" interval="month"/>
+                <field name="gender"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_clinic_patient_pivot" model="ir.ui.view">
+        <field name="name">clinic.patient.pivot</field>
+        <field name="model">clinic.patient</field>
+        <field name="arch" type="xml">
+            <pivot string="Patients">
+                <field name="blood_group" type="row"/>
+                <field name="gender" type="col"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_analysis_patients" model="ir.actions.act_window">
+        <field name="name">Patient Report</field>
+        <field name="res_model">clinic.patient</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+
+    <!-- appointments -->
+    <record id="view_clinic_appointment_graph" model="ir.ui.view">
+        <field name="name">clinic.appointment.graph</field>
+        <field name="model">clinic.appointment</field>
+        <field name="arch" type="xml">
+            <graph string="Appointments" type="bar" stacked="1">
+                <field name="appointment_date" interval="day"/>
+                <field name="state"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_clinic_appointment_pivot" model="ir.ui.view">
+        <field name="name">clinic.appointment.pivot</field>
+        <field name="model">clinic.appointment</field>
+        <field name="arch" type="xml">
+            <pivot string="Appointments">
+                <field name="doctor_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="consultation_fee" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_analysis_appointments" model="ir.actions.act_window">
+        <field name="name">Appointment Report</field>
+        <field name="res_model">clinic.appointment</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="context">{'search_default_filter_date': 1}</field>
+    </record>
+    <record id="action_analysis_doctor_performance" model="ir.actions.act_window">
+        <field name="name">Doctor Performance</field>
+        <field name="res_model">clinic.appointment</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'pivot_row_groupby': ['doctor_id'], 'pivot_column_groupby': ['state'],
+                               'pivot_measures': ['__count', 'consultation_fee'],
+                               'graph_groupbys': ['doctor_id', 'state'], 'graph_mode': 'bar'}</field>
+    </record>
+
+    <!-- admissions -->
+    <record id="view_clinic_admission_graph" model="ir.ui.view">
+        <field name="name">clinic.admission.graph</field>
+        <field name="model">clinic.admission</field>
+        <field name="arch" type="xml">
+            <graph string="Admissions" type="line">
+                <field name="admission_date" interval="month"/>
+                <field name="admission_type"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_clinic_admission_pivot" model="ir.ui.view">
+        <field name="name">clinic.admission.pivot</field>
+        <field name="model">clinic.admission</field>
+        <field name="arch" type="xml">
+            <pivot string="Admissions">
+                <field name="department_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="bed_rate" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_analysis_admissions" model="ir.actions.act_window">
+        <field name="name">Admission Report</field>
+        <field name="res_model">clinic.admission</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+
+    <!-- discharges -->
+    <record id="view_clinic_discharge_graph" model="ir.ui.view">
+        <field name="name">clinic.discharge.graph</field>
+        <field name="model">clinic.discharge</field>
+        <field name="arch" type="xml">
+            <graph string="Discharges" type="bar">
+                <field name="discharge_date" interval="month"/>
+                <field name="discharge_type"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_clinic_discharge_pivot" model="ir.ui.view">
+        <field name="name">clinic.discharge.pivot</field>
+        <field name="model">clinic.discharge</field>
+        <field name="arch" type="xml">
+            <pivot string="Discharges">
+                <field name="doctor_id" type="row"/>
+                <field name="discharge_type" type="col"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_analysis_discharges" model="ir.actions.act_window">
+        <field name="name">Discharge Report</field>
+        <field name="res_model">clinic.discharge</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="domain">[('state', '=', 'done')]</field>
+    </record>
+
+    <!-- beds -->
+    <record id="view_clinic_bed_graph" model="ir.ui.view">
+        <field name="name">clinic.bed.graph</field>
+        <field name="model">clinic.bed</field>
+        <field name="arch" type="xml">
+            <graph string="Bed Occupancy" type="bar" stacked="1">
+                <field name="category_id"/>
+                <field name="state"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_clinic_bed_pivot" model="ir.ui.view">
+        <field name="name">clinic.bed.pivot</field>
+        <field name="model">clinic.bed</field>
+        <field name="arch" type="xml">
+            <pivot string="Bed Occupancy">
+                <field name="category_id" type="row"/>
+                <field name="state" type="col"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_analysis_beds" model="ir.actions.act_window">
+        <field name="name">Bed Occupancy</field>
+        <field name="res_model">clinic.bed</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+
+    <!-- revenue -->
+    <record id="action_analysis_revenue" model="ir.actions.act_window">
+        <field name="name">Revenue Report</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="domain">[('clinic_patient_id', '!=', False), ('state', '=', 'posted'), ('move_type', 'in', ('out_invoice', 'out_refund'))]</field>
+        <field name="context">{'create': False, 'graph_groupbys': ['invoice_date:month'], 'graph_measure': 'amount_total_signed',
+                               'pivot_row_groupby': ['invoice_date:month'], 'pivot_column_groupby': ['payment_state'],
+                               'pivot_measures': ['amount_total_signed', 'amount_residual_signed']}</field>
+    </record>
+
+    <!-- pharmacy -->
+    <record id="view_clinic_prescription_line_list" model="ir.ui.view">
+        <field name="name">clinic.prescription.line.list</field>
+        <field name="model">clinic.prescription.line</field>
+        <field name="arch" type="xml">
+            <list string="Medicines Prescribed" create="0">
+                <field name="date"/>
+                <field name="prescription_id"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="product_id"/>
+                <field name="dosage"/>
+                <field name="frequency"/>
+                <field name="duration"/>
+                <field name="quantity" sum="Total"/>
+                <field name="subtotal" sum="Total"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_clinic_prescription_line_pivot" model="ir.ui.view">
+        <field name="name">clinic.prescription.line.pivot</field>
+        <field name="model">clinic.prescription.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Pharmacy">
+                <field name="product_id" type="row"/>
+                <field name="quantity" type="measure"/>
+                <field name="subtotal" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_clinic_prescription_line_graph" model="ir.ui.view">
+        <field name="name">clinic.prescription.line.graph</field>
+        <field name="model">clinic.prescription.line</field>
+        <field name="arch" type="xml">
+            <graph string="Pharmacy" type="bar">
+                <field name="product_id"/>
+                <field name="quantity" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_clinic_prescription_line_search" model="ir.ui.view">
+        <field name="name">clinic.prescription.line.search</field>
+        <field name="model">clinic.prescription.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <filter name="dispensed" string="Dispensed" domain="[('state', '=', 'dispensed')]"/>
+                <filter name="filter_date" string="Date" date="date"/>
+                <group>
+                    <filter name="group_product" string="Medicine" context="{'group_by': 'product_id'}"/>
+                    <filter name="group_category" string="Medicine Category" context="{'group_by': 'medicine_category_id'}"/>
+                    <filter name="group_doctor" string="Doctor" context="{'group_by': 'doctor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_analysis_pharmacy" model="ir.actions.act_window">
+        <field name="name">Pharmacy Report</field>
+        <field name="res_model">clinic.prescription.line</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[('state', 'in', ('confirmed', 'dispensed'))]</field>
+    </record>
+
+    <!-- laboratory -->
+    <record id="view_clinic_lab_request_line_list" model="ir.ui.view">
+        <field name="name">clinic.lab.request.line.list</field>
+        <field name="model">clinic.lab.request.line</field>
+        <field name="arch" type="xml">
+            <list string="Lab Tests" create="0" decoration-danger="is_abnormal">
+                <field name="request_date"/>
+                <field name="request_id"/>
+                <field name="patient_id"/>
+                <field name="test_type_id"/>
+                <field name="category_id"/>
+                <field name="result"/>
+                <field name="normal_range"/>
+                <field name="is_abnormal"/>
+                <field name="price" sum="Total"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_clinic_lab_request_line_pivot" model="ir.ui.view">
+        <field name="name">clinic.lab.request.line.pivot</field>
+        <field name="model">clinic.lab.request.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Laboratory">
+                <field name="category_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="price" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_clinic_lab_request_line_graph" model="ir.ui.view">
+        <field name="name">clinic.lab.request.line.graph</field>
+        <field name="model">clinic.lab.request.line</field>
+        <field name="arch" type="xml">
+            <graph string="Laboratory" type="bar">
+                <field name="test_type_id"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_clinic_lab_request_line_search" model="ir.ui.view">
+        <field name="name">clinic.lab.request.line.search</field>
+        <field name="model">clinic.lab.request.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="test_type_id"/>
+                <field name="patient_id"/>
+                <filter name="abnormal" string="Abnormal Results" domain="[('is_abnormal', '=', True)]"/>
+                <filter name="done" string="Completed" domain="[('state', '=', 'done')]"/>
+                <filter name="filter_date" string="Date" date="request_date"/>
+                <group>
+                    <filter name="group_test" string="Test" context="{'group_by': 'test_type_id'}"/>
+                    <filter name="group_category" string="Category" context="{'group_by': 'category_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_analysis_lab" model="ir.actions.act_window">
+        <field name="name">Laboratory Report</field>
+        <field name="res_model">clinic.lab.request.line</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[('state', '!=', 'cancelled')]</field>
+    </record>
+</odoo>

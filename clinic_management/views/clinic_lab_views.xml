@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_clinic_lab_request_list" model="ir.ui.view">
+        <field name="name">clinic.lab.request.list</field>
+        <field name="model">clinic.lab.request</field>
+        <field name="arch" type="xml">
+            <list string="Lab Requests" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="request_date"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="test_date" optional="show"/>
+                <field name="technician_id" optional="show"/>
+                <field name="amount_total" sum="Total" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'in_progress'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_lab_request_form" model="ir.ui.view">
+        <field name="name">clinic.lab.request.form</field>
+        <field name="model">clinic.lab.request</field>
+        <field name="arch" type="xml">
+            <form string="Lab Request">
+                <header>
+                    <button name="action_collect_sample" type="object" string="Collect Sample" class="btn-primary"
+                            invisible="state != 'draft'" groups="clinic_management.group_clinic_lab,clinic_management.group_clinic_nurse"/>
+                    <button name="action_done" type="object" string="Validate Results" class="btn-primary"
+                            invisible="state != 'in_progress'" groups="clinic_management.group_clinic_lab"/>
+                    <button name="action_print_report" type="object" string="Print Lab Report" invisible="state != 'done'"/>
+                    <button name="action_create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice"
+                            invisible="state == 'cancelled' or invoice_id or admission_id"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('done', 'cancelled')"/>
+                    <button name="action_reset_draft" type="object" string="Reset" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoice" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not invoice_id" groups="account.group_account_invoice">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Invoice</span>
+                                <span class="o_stat_value"><field name="invoice_payment_state"/></span>
+                            </div>
+                        </button>
+                    </div>
+                    <field name="invoice_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id" readonly="state != 'draft'"/>
+                            <field name="patient_age"/>
+                            <field name="patient_gender"/>
+                            <field name="doctor_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="request_date" readonly="state != 'draft'"/>
+                            <field name="test_date"/>
+                            <field name="technician_id"/>
+                            <field name="consultation_id" readonly="state != 'draft'"/>
+                            <field name="admission_id" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tests &amp; Results" name="tests">
+                            <field name="line_ids" readonly="state in ('done', 'cancelled')">
+                                <list editable="bottom" decoration-danger="is_abnormal">
+                                    <field name="test_type_id" readonly="parent.state != 'draft'" options="{'no_create': True}"/>
+                                    <field name="category_id" optional="show"/>
+                                    <field name="result"/>
+                                    <field name="unit"/>
+                                    <field name="normal_range"/>
+                                    <field name="is_abnormal"/>
+                                    <field name="remarks" optional="show"/>
+                                    <field name="price" sum="Total" readonly="parent.state != 'draft'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Attachments" name="attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                        <page string="Clinical Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_lab_request_kanban" model="ir.ui.view">
+        <field name="name">clinic.lab.request.kanban</field>
+        <field name="model">clinic.lab.request</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" group_create="0" records_draggable="0">
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold"/>
+                        <field name="patient_id" class="fs-5"/>
+                        <div class="text-muted"><i title="Doctor" class="fa fa-user-md me-1"/><field name="doctor_id"/></div>
+                        <div><i title="Time" class="fa fa-clock-o me-1"/><field name="request_date"/></div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_clinic_lab_request_search" model="ir.ui.view">
+        <field name="name">clinic.lab.request.search</field>
+        <field name="model">clinic.lab.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="line_ids" string="Test" filter_domain="[('line_ids.test_type_id', 'ilike', self)]"/>
+                <filter name="requested" string="Requested" domain="[('state', '=', 'draft')]"/>
+                <filter name="in_progress" string="Sample Collected" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="done" string="Completed" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="filter_date" string="Request Date" date="request_date"/>
+                <group>
+                    <filter name="group_doctor" string="Doctor" context="{'group_by': 'doctor_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'request_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_lab_request" model="ir.actions.act_window">
+        <field name="name">Lab Requests</field>
+        <field name="res_model">clinic.lab.request</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No lab requests yet</p>
+            <p>Requested → Sample Collected → Completed. Print the lab report once results are validated.</p>
+        </field>
+    </record>
+
+    <!-- test types / categories -->
+    <record id="view_clinic_lab_test_type_list" model="ir.ui.view">
+        <field name="name">clinic.lab.test.type.list</field>
+        <field name="model">clinic.lab.test.type</field>
+        <field name="arch" type="xml">
+            <list string="Lab Tests" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="sample_type"/>
+                <field name="normal_range"/>
+                <field name="unit"/>
+                <field name="price"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_lab_test_type_search" model="ir.ui.view">
+        <field name="name">clinic.lab.test.type.search</field>
+        <field name="model">clinic.lab.test.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category_id"/>
+                <group>
+                    <filter name="group_category" string="Category" context="{'group_by': 'category_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_lab_test_type" model="ir.actions.act_window">
+        <field name="name">Lab Tests</field>
+        <field name="res_model">clinic.lab.test.type</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_clinic_lab_test_category_list" model="ir.ui.view">
+        <field name="name">clinic.lab.test.category.list</field>
+        <field name="model">clinic.lab.test.category</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_clinic_lab_test_category" model="ir.actions.act_window">
+        <field name="name">Lab Test Categories</field>
+        <field name="res_model">clinic.lab.test.category</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

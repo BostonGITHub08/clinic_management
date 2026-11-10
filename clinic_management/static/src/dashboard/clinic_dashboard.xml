@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="clinic_management.Dashboard">
+        <div class="o_clinic_dashboard o_action h-100 overflow-auto" t-att-class="{'o_clinic_loading': state.loading}">
+            <div class="o_clinic_wrap">
+
+                <!-- hero header -->
+                <section class="o_clinic_hero o_clinic_reveal">
+                    <span class="o_clinic_blob o_clinic_blob_1"/>
+                    <span class="o_clinic_blob o_clinic_blob_2"/>
+                    <span class="o_clinic_blob o_clinic_blob_3"/>
+                    <div class="o_clinic_hero_body">
+                        <div class="o_clinic_hero_text">
+                            <div class="o_clinic_hero_date"><i class="fa fa-calendar-o me-2" title="Date"/><t t-esc="todayLabel"/></div>
+                            <h1 class="o_clinic_hero_title" t-esc="greeting"/>
+                            <p class="o_clinic_hero_sub">
+                                Here is what is happening in your clinic
+                                <strong t-esc="periodLabel"/>.
+                                <span class="o_clinic_hero_updated">
+                                    <i class="fa fa-refresh me-1" t-att-class="{'fa-spin': state.loading}" title="Updated"/>Updated <t t-esc="state.updatedAt"/>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="o_clinic_hero_actions">
+                            <t t-foreach="quickActions" t-as="qa" t-key="qa.model">
+                                <button type="button" class="o_clinic_quick" t-on-click="() => this.openNew(qa)">
+                                    <i t-att-class="'fa ' + qa.icon" t-att-title="qa.label"/>
+                                    <span t-esc="qa.label"/>
+                                </button>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="o_clinic_toolbar">
+                        <div class="o_clinic_segment" role="group">
+                            <t t-foreach="periods" t-as="p" t-key="p.key">
+                                <button type="button" t-att-class="{'active': state.period === p.key}"
+                                        t-on-click="() => this.setPeriod(p.key)" t-esc="p.label"/>
+                            </t>
+                        </div>
+                        <div t-if="state.period === 'custom'" class="o_clinic_dates">
+                            <input type="date" t-att-value="state.dateFrom" t-on-change="(ev) => this.onDateChange('dateFrom', ev)"/>
+                            <i class="fa fa-long-arrow-right" title="to"/>
+                            <input type="date" t-att-value="state.dateTo" t-on-change="(ev) => this.onDateChange('dateTo', ev)"/>
+                        </div>
+                        <button type="button" class="o_clinic_refresh" title="Refresh" t-on-click="() => this.refresh()">
+                            <i class="fa fa-refresh" t-att-class="{'fa-spin': state.loading}" title="Refresh"/>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- KPI cards -->
+                <section class="o_clinic_kpis">
+                    <t t-foreach="kpiCards" t-as="card" t-key="card.key">
+                        <div class="o_clinic_kpi o_clinic_reveal" t-att-class="'o_clinic_c_' + card.color"
+                             t-att-style="'animation-delay: ' + (card_index * 55) + 'ms'"
+                             role="button" t-on-click="() => this.openKpi(card.key)">
+                            <i t-att-class="'o_clinic_kpi_ghost fa ' + card.icon" t-att-title="card.label"/>
+                            <div class="o_clinic_kpi_icon"><i t-att-class="'fa ' + card.icon" t-att-title="card.label"/></div>
+                            <div class="o_clinic_kpi_value" t-esc="card.value"/>
+                            <div class="o_clinic_kpi_label" t-esc="card.label"/>
+                            <div class="o_clinic_kpi_sub">
+                                <span t-esc="card.sub"/>
+                                <i class="fa fa-arrow-right o_clinic_kpi_go" title="Open"/>
+                            </div>
+                            <div t-if="card.progress !== undefined" class="o_clinic_kpi_track">
+                                <div class="o_clinic_kpi_fill" t-att-style="'width: ' + card.progress + '%'"/>
+                            </div>
+                        </div>
+                    </t>
+                </section>
+
+                <!-- charts -->
+                <section class="o_clinic_grid">
+                    <div class="o_clinic_panel o_clinic_span_7 o_clinic_reveal" style="animation-delay: 150ms">
+                        <header class="o_clinic_panel_head">
+                            <div class="o_clinic_panel_icon o_clinic_c_teal"><i class="fa fa-bar-chart" title="Revenue"/></div>
+                            <div>
+                                <h3>Monthly Revenue</h3>
+                                <small>Posted patient invoices · last 12 months</small>
+                            </div>
+                        </header>
+                        <div class="o_clinic_chart"><canvas t-ref="revenueChart"/></div>
+                    </div>
+                    <div class="o_clinic_panel o_clinic_span_5 o_clinic_reveal" style="animation-delay: 220ms">
+                        <header class="o_clinic_panel_head">
+                            <div class="o_clinic_panel_icon o_clinic_c_blue"><i class="fa fa-calendar" title="Appointments"/></div>
+                            <div>
+                                <h3>Weekly Appointments</h3>
+                                <small>Scheduled vs completed</small>
+                            </div>
+                        </header>
+                        <div class="o_clinic_chart"><canvas t-ref="appointmentChart"/></div>
+                    </div>
+                    <div class="o_clinic_panel o_clinic_span_7 o_clinic_reveal" style="animation-delay: 290ms">
+                        <header class="o_clinic_panel_head">
+                            <div class="o_clinic_panel_icon o_clinic_c_violet"><i class="fa fa-area-chart" title="Admissions"/></div>
+                            <div>
+                                <h3>Patient Admission Statistics</h3>
+                                <small>Admissions and discharges · last 6 months</small>
+                            </div>
+                        </header>
+                        <div class="o_clinic_chart"><canvas t-ref="admissionChart"/></div>
+                    </div>
+                    <div class="o_clinic_panel o_clinic_span_5 o_clinic_reveal" style="animation-delay: 360ms">
+                        <header class="o_clinic_panel_head">
+                            <div class="o_clinic_panel_icon o_clinic_c_red"><i class="fa fa-bed" title="Beds"/></div>
+                            <div>
+                                <h3>Bed Occupancy</h3>
+                                <small><t t-esc="kpis.occupied_beds"/> of <t t-esc="kpis.available_beds + kpis.occupied_beds + kpis.maintenance_beds"/> beds in use</small>
+                            </div>
+                        </header>
+                        <div class="o_clinic_beds">
+                            <div class="o_clinic_chart o_clinic_chart_donut"><canvas t-ref="bedChart"/></div>
+                            <div class="o_clinic_bed_list">
+                                <div class="o_clinic_legend">
+                                    <span><i class="o_clinic_dot o_clinic_bg_green"/>Available <b t-esc="kpis.available_beds"/></span>
+                                    <span><i class="o_clinic_dot o_clinic_bg_red"/>Occupied <b t-esc="kpis.occupied_beds"/></span>
+                                    <span><i class="o_clinic_dot o_clinic_bg_amber"/>Maintenance <b t-esc="kpis.maintenance_beds"/></span>
+                                </div>
+                                <div t-if="!state.data.bed_overview.length" class="o_clinic_empty">No rooms configured yet.</div>
+                                <div t-foreach="state.data.bed_overview" t-as="cat" t-key="cat.id" class="o_clinic_bed_row">
+                                    <div class="o_clinic_bed_row_head">
+                                        <span t-esc="cat.name"/>
+                                        <small><t t-esc="cat.occupied"/>/<t t-esc="cat.total"/> · <t t-esc="cat.rate"/>%</small>
+                                    </div>
+                                    <div class="o_clinic_bar">
+                                        <div class="o_clinic_bar_fill" t-att-class="occupancyClass(cat.rate)"
+                                             t-att-style="'width: ' + cat.rate + '%; animation-delay: ' + (400 + cat_index * 120) + 'ms'"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- lists -->
+                <section class="o_clinic_grid">
+                    <div class="o_clinic_panel o_clinic_span_4 o_clinic_reveal" style="animation-delay: 420ms">
+                        <header class="o_clinic_panel_head">
+                            <div class="o_clinic_panel_icon o_clinic_c_blue"><i class="fa fa-clock-o" title="Upcoming"/></div>
+                            <div class="flex-grow-1"><h3>Upcoming Appointments</h3><small>Next in the schedule</small></div>
+                            <a href="#" class="o_clinic_link" t-on-click.prevent="() => this.openAction('Appointments', 'clinic.appointment', [['state', 'in', ['draft', 'confirmed']]], ['calendar', 'list', 'form'])">View all</a>
+                        </header>
+                        <t t-call="clinic_management.AppointmentRows"><t t-set="rows" t-value="state.data.upcoming_appointments"/></t>
+                    </div>
+                    <div class="o_clinic_panel o_clinic_span_4 o_clinic_reveal" style="animation-delay: 480ms">
+                        <header class="o_clinic_panel_head">
+                            <div class="o_clinic_panel_icon o_clinic_c_teal"><i class="fa fa-stethoscope" title="Recent"/></div>
+                            <div class="flex-grow-1"><h3>Recent Appointments</h3><small t-esc="periodLabel"/></div>
+                            <a href="#" class="o_clinic_link" t-on-click.prevent="() => this.openKpi('appointments')">View all</a>
+                        </header>
+                        <t t-call="clinic_management.AppointmentRows"><t t-set="rows" t-value="state.data.recent_appointments"/></t>
+                    </div>
+                    <div class="o_clinic_panel o_clinic_span_4 o_clinic_reveal" style="animation-delay: 540ms">
+                        <header class="o_clinic_panel_head">
+                            <div class="o_clinic_panel_icon o_clinic_c_violet"><i class="fa fa-user-plus" title="Patients"/></div>
+                            <div class="flex-grow-1"><h3>New Patients</h3><small>Latest registrations</small></div>
+                            <a href="#" class="o_clinic_link" t-on-click.prevent="() => this.openKpi('patients')">View all</a>
+                        </header>
+                        <div t-if="!state.data.recent_patients.length" class="o_clinic_empty">
+                            <i class="fa fa-user-o" title="Empty"/> No patients yet.
+                        </div>
+                        <ul class="o_clinic_rows">
+                            <li t-foreach="state.data.recent_patients" t-as="p" t-key="p.id" class="o_clinic_row"
+                                t-att-style="'animation-delay: ' + (600 + p_index * 60) + 'ms'"
+                                role="button" t-on-click="() => this.openRecord('clinic.patient', p.id)">
+                                <span class="o_clinic_avatar" t-att-style="avatarStyle(p.id)" t-esc="initials(p.name)"/>
+                                <div class="o_clinic_row_main">
+                                    <div class="o_clinic_row_title" t-esc="p.name"/>
+                                    <div class="o_clinic_row_meta"><t t-esc="p.ref"/><t t-if="p.age"> · <t t-esc="p.age"/></t><t t-if="p.phone"> · <t t-esc="p.phone"/></t></div>
+                                </div>
+                                <small class="o_clinic_row_side" t-esc="p.date"/>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="clinic_management.AppointmentRows">
+        <div t-if="!rows.length" class="o_clinic_empty">
+            <i class="fa fa-calendar-o" title="Empty"/> No appointments.
+        </div>
+        <ul class="o_clinic_rows">
+            <li t-foreach="rows" t-as="a" t-key="a.id" class="o_clinic_row"
+                t-att-style="'animation-delay: ' + (600 + a_index * 60) + 'ms'"
+                role="button" t-on-click="() => this.openRecord('clinic.appointment', a.id)">
+                <span class="o_clinic_avatar" t-att-style="avatarStyle(a.id)" t-esc="initials(a.patient)"/>
+                <div class="o_clinic_row_main">
+                    <div class="o_clinic_row_title" t-esc="a.patient"/>
+                    <div class="o_clinic_row_meta"><i class="fa fa-user-md me-1" title="Doctor"/><t t-esc="a.doctor"/> · <t t-esc="a.date"/></div>
+                </div>
+                <span class="o_clinic_pill" t-att-class="stateClass(a.state)" t-esc="a.state_label"/>
+            </li>
+        </ul>
+    </t>
+</templates>

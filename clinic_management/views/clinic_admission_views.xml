@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_clinic_admission_list" model="ir.ui.view">
+        <field name="name">clinic.admission.list</field>
+        <field name="model">clinic.admission</field>
+        <field name="arch" type="xml">
+            <list string="Admissions" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="department_id" optional="show"/>
+                <field name="admission_type" optional="show"/>
+                <field name="admission_date"/>
+                <field name="bed_id"/>
+                <field name="stay_days" optional="show"/>
+                <field name="discharge_date" optional="show"/>
+                <field name="invoice_payment_state" widget="badge" optional="hide" groups="account.group_account_invoice"/>
+                <field name="state" widget="badge" decoration-warning="state == 'admitted'" decoration-success="state == 'discharged'"
+                       decoration-info="state == 'draft'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_admission_form" model="ir.ui.view">
+        <field name="name">clinic.admission.form</field>
+        <field name="model">clinic.admission</field>
+        <field name="arch" type="xml">
+            <form string="Admission">
+                <header>
+                    <button name="action_admit" type="object" string="Admit" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_discharge" type="object" string="Discharge" class="btn-primary" invisible="state != 'admitted'"/>
+                    <button name="action_create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice"
+                            invisible="state not in ('admitted', 'discharged') or invoice_id"/>
+                    <button name="%(action_report_admission)d" type="action" string="Print" invisible="state == 'draft'"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state != 'draft'"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,admitted,discharged"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_prescriptions" type="object" class="oe_stat_button" icon="fa-medkit">
+                            <field name="prescription_count" widget="statinfo" string="Prescriptions"/>
+                        </button>
+                        <button name="action_view_lab_requests" type="object" class="oe_stat_button" icon="fa-flask">
+                            <field name="lab_request_count" widget="statinfo" string="Lab Tests"/>
+                        </button>
+                        <button name="action_discharge" type="object" class="oe_stat_button" icon="fa-sign-out"
+                                invisible="not discharge_id" string="Discharge"/>
+                        <button name="action_view_invoice" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not invoice_id" groups="account.group_account_invoice">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Invoice</span>
+                                <span class="o_stat_value"><field name="invoice_payment_state"/></span>
+                            </div>
+                        </button>
+                    </div>
+                    <field name="discharge_id" invisible="1"/>
+                    <field name="invoice_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Patient">
+                            <field name="patient_id" readonly="state != 'draft'"/>
+                            <field name="patient_age"/>
+                            <field name="patient_gender"/>
+                            <field name="admission_type" readonly="state != 'draft'"/>
+                            <field name="admission_date" readonly="state != 'draft'"/>
+                            <field name="discharge_date" invisible="not discharge_date"/>
+                            <field name="stay_days" invisible="state == 'draft'"/>
+                        </group>
+                        <group string="Care Team &amp; Bed">
+                            <field name="doctor_id" readonly="state == 'discharged'"/>
+                            <field name="department_id" readonly="state == 'discharged'"/>
+                            <field name="responsible_staff_id" readonly="state == 'discharged'"/>
+                            <field name="room_id" readonly="state in ('discharged', 'cancelled')" options="{'no_create': True}"/>
+                            <field name="bed_id" readonly="state in ('discharged', 'cancelled')" options="{'no_create': True}"
+                                   required="state == 'admitted'"/>
+                            <field name="bed_rate" readonly="invoice_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Diagnosis &amp; Notes" name="notes">
+                            <group>
+                                <field name="diagnosis"/>
+                            </group>
+                            <field name="notes" placeholder="Admission notes..."/>
+                        </page>
+                        <page string="Additional Services" name="services">
+                            <field name="service_line_ids" readonly="invoice_id">
+                                <list editable="bottom">
+                                    <field name="date"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit"/>
+                                    <field name="subtotal" sum="Total"/>
+                                </list>
+                            </field>
+                            <group>
+                                <group>
+                                    <field name="discount" readonly="invoice_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Prescriptions" name="prescriptions">
+                            <field name="prescription_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="doctor_id"/>
+                                    <field name="amount_total"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Lab Tests" name="lab">
+                            <field name="lab_request_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="request_date"/>
+                                    <field name="amount_total"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_admission_search" model="ir.ui.view">
+        <field name="name">clinic.admission.search</field>
+        <field name="model">clinic.admission</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="bed_id"/>
+                <filter name="admitted" string="Currently Admitted" domain="[('state', '=', 'admitted')]"/>
+                <filter name="discharged" string="Discharged" domain="[('state', '=', 'discharged')]"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter name="emergency" string="Emergency" domain="[('admission_type', '=', 'emergency')]"/>
+                <filter name="not_invoiced" string="Not Invoiced" domain="[('invoice_id', '=', False), ('state', 'in', ('admitted', 'discharged'))]"/>
+                <separator/>
+                <filter name="filter_date" string="Admission Date" date="admission_date"/>
+                <group>
+                    <filter name="group_doctor" string="Doctor" context="{'group_by': 'doctor_id'}"/>
+                    <filter name="group_department" string="Department" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_type" string="Admission Type" context="{'group_by': 'admission_type'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_month" string="Month" context="{'group_by': 'admission_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_admission" model="ir.actions.act_window">
+        <field name="name">Admissions</field>
+        <field name="res_model">clinic.admission</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_admitted': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Admit a patient</p>
+            <p>Select an available bed; it is reserved on admission and released at discharge.</p>
+        </field>
+    </record>
+</odoo>
